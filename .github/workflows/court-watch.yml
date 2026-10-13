@@ -1,0 +1,57 @@
+name: court-watch
+
+on:
+  # GitHub's own scheduler can run late or skip runs at busy times. For reliable hourly
+  # checks, also trigger this workflow from cron-job.org via the workflow_dispatch API
+  # (see README). Overlapping runs are harmless: they queue, and state dedupes alerts.
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: court-watch
+  cancel-in-progress: false
+
+env:
+  # Optional: set a repository variable GIST_ID to publish the summary to a gist.
+  GIST_ID: ${{ vars.GIST_ID }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      - name: Check courts
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
+          NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
+          STATE_FILE: seen_slots.json
+          SUMMARY_URL: ${{ vars.GIST_ID && format('https://gist.github.com/{0}', vars.GIST_ID) || format('https://github.com/{0}/actions', github.repository) }}
+          TZ: Europe/London
+        run: python court_watch.py
+
+      - name: Save state
+        run: |
+          [ -f seen_slots.json ] || exit 0  # no ntfy topic set, so nothing to save
+          git config user.name "court-watch-bot"
+          git config user.email "court-watch-bot@users.noreply.github.com"
+          git add seen_slots.json
+          git diff --cached --quiet || { git commit -m "update seen slots [skip ci]" && git push; }
+
+      - name: Update summary gist
+        if: env.GIST_ID != ''
+        env:
+          GH_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: gh gist edit "$GIST_ID" --filename courts.md courts.md
