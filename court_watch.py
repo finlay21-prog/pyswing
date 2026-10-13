@@ -107,6 +107,13 @@ VENUES = {
 }
 NTFY_TAGS = {"Tennis": "tennis", "Squash": "squash"}
 
+# Which booking platforms this run checks, e.g. PLATFORMS=better. Default: all.
+# ClubSpark's firewall blocks cloud servers (incl. GitHub Actions), so GitHub runs
+# PLATFORMS=better and a phone/home machine runs PLATFORMS=clubspark (see phone/).
+ENABLED = {p.strip() for p in os.environ.get("PLATFORMS", "").split(",") if p.strip()} or set(PLATFORMS)
+if ENABLED - set(PLATFORMS):
+    raise SystemExit(f"Unknown PLATFORMS: {', '.join(sorted(ENABLED - set(PLATFORMS)))}")
+
 
 def topic_for(sport: str):
     return os.environ.get(f"NTFY_TOPIC_{sport.upper()}") or NTFY_TOPIC
@@ -144,11 +151,19 @@ def main():
     today = dt.date.today()
     now = dt.datetime.now().strftime("%H:%M")
 
+    elsewhere = []  # venues on platforms this run doesn't check
     for sport, venues in VENUES.items():
+        if not any(cfg[0] in ENABLED for cfg in venues.values()):
+            continue
         summary.append(f"\n# {sport}")
         for venue, (platform, *args) in venues.items():
             fetch, make_link = PLATFORMS[platform]
             vkey = f"{sport}|{venue}"
+            if platform not in ENABLED:
+                elsewhere.append(f"\n## {venue} ({sport.lower()}, checked separately)\n"
+                                 f"- [Book]({make_link(*args, today.isoformat())})")
+                now_seen |= {k for k in seen if k.startswith(f"{vkey}|")}  # keep its state intact
+                continue
             # A venue we've never checked before is recorded silently, so a new repo
             # (or newly added venue) doesn't fire an alert for every free slot.
             first_check = vkey not in seeded
@@ -202,6 +217,7 @@ def main():
     summary.append("\n# Check manually\n"
                    "\n## Bethnal Green Gardens (tennis + padel)\n"
                    f"- [Book](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/{today}#book)")
+    summary.extend(elsewhere)
 
     text = "\n".join(summary) + "\n"
     print(text)

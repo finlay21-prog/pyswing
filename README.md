@@ -6,16 +6,21 @@ Based on [danol0/pyswing](https://github.com/danol0/pyswing), with squash added.
 
 ## What it watches
 
-| Sport  | Venue                   | Booking system |
-|--------|-------------------------|----------------|
-| Tennis | Haggerston Park         | Better         |
-| Tennis | Rosemary Gardens        | Better         |
-| Tennis | Joe White Gardens       | ClubSpark      |
-| Tennis | London Fields           | ClubSpark      |
-| Tennis | Clissold Park           | ClubSpark      |
-| Squash | Britannia               | Better         |
-| Squash | Clissold Leisure Centre | Better         |
-| Squash | Sobell                  | Better         |
+| Sport  | Venue                   | Booking system | Checked from   |
+|--------|-------------------------|----------------|----------------|
+| Tennis | Haggerston Park         | Better         | GitHub Actions |
+| Tennis | Rosemary Gardens        | Better         | GitHub Actions |
+| Tennis | Joe White Gardens       | ClubSpark      | Phone          |
+| Tennis | London Fields           | ClubSpark      | Phone          |
+| Tennis | Clissold Park           | ClubSpark      | Phone          |
+| Squash | Britannia               | Better         | GitHub Actions |
+| Squash | Clissold Leisure Centre | Better         | GitHub Actions |
+| Squash | Sobell                  | Better         | GitHub Actions |
+
+ClubSpark sits behind a Cloudflare firewall that blocks cloud servers, GitHub's included
+(as of October 2026). So the ClubSpark venues are checked hourly from an Android
+phone instead, using its own connection. See [Phone checks](#phone-checks-clubspark).
+Which platforms a run checks is set by `PLATFORMS` (e.g. `PLATFORMS=better`); by default it checks all of them.
 
 Bethnal Green Gardens (Tower Hamlets) is link-only, since that site forbids scraping.
 
@@ -38,6 +43,22 @@ to `VENUES` in `court_watch.py`.
    - `NTFY_TOPIC`: alerts for everything, **or**
    - `NTFY_TOPIC_SQUASH` and/or `NTFY_TOPIC_TENNIS`: separate topics per sport. Set only the squash one if you just want squash alerts.
 4. **Run it once by hand.** Go to Actions → court-watch → Run workflow. The first run records what's free without alerting. After that it runs hourly.
+
+### Phone checks (ClubSpark)
+
+Runs the ClubSpark venues every hour on an Android phone with Termux.
+
+1. Install **Termux** and **Termux:API** from F-Droid (f-droid.org). Get both from the same place; the Play Store and F-Droid versions don't work together.
+2. Settings → Apps → Termux → App battery usage → **Unrestricted**, so Android doesn't stop the hourly job. Do the same for Termux:API.
+3. Open Termux and paste, with your ntfy topic at the end:
+   ```
+   pkg update -y && pkg install -y git && git clone https://github.com/finlay21-prog/pyswing && bash pyswing/phone/setup.sh YOUR-NTFY-TOPIC
+   ```
+   It installs Python, runs a first check (silently recording what's free) and schedules hourly checks.
+   If ClubSpark can't be reached from the phone, it says so and stops.
+
+Check it's running with `tail ~/pyswing-runs.log` (one line per run). The phone pulls code
+changes from GitHub before each run, so it stays up to date. To stop it: `termux-job-scheduler --cancel --job-id 1`.
 
 ### Optional: summary page
 

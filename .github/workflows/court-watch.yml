@@ -38,6 +38,8 @@ jobs:
           NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
           NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
           STATE_FILE: seen_slots.json
+          # ClubSpark's firewall blocks GitHub's servers; those venues run on the phone (phone/).
+          PLATFORMS: better
           SUMMARY_URL: ${{ vars.GIST_ID && format('https://gist.github.com/{0}', vars.GIST_ID) || format('https://github.com/{0}/actions', github.repository) }}
           TZ: Europe/London
         run: python court_watch.py
