@@ -221,13 +221,14 @@ def empty_basket(session, uid, debug: str):
     ids = [i.get("id") for i in items if isinstance(i, dict) and i.get("id")] if isinstance(items, list) else []
     if ids:
         api(session, "POST", f"{CART}/remove", f"{debug}: remove {len(ids)} item(s)",
-            params={"membership_user_id": uid}, json={"cart_item_ids": ids})
+            params={k: v for k, v in {"membership_user_id": uid}.items() if v}, json={"cart_item_ids": ids})
     return cart
 
 
 def book(session, user: dict, date: dt.date, s: dict) -> str:
     """Basket -> credit -> checkout. Returns a status line. In dry-run mode stops before paying."""
-    uid = user.get("id")
+    mu = user.get("membership_user")  # None unless you have a Better membership
+    uid = mu.get("id") if isinstance(mu, dict) else mu
     # Start from an empty basket so we only pay for this court.
     empty_basket(session, uid, "before")
     api(session, "POST", f"{CART}/add", "add to basket",
@@ -242,14 +243,18 @@ def book(session, user: dict, date: dt.date, s: dict) -> str:
     checkout = api(session, "GET", f"{BASE}/api/checkout/", "load checkout")
     if not LIVE:
         after = empty_basket(session, uid, "dry run cleanup")
-        balance = (user.get("credit") or {}).get("balance")
+        general = ((cart.get("data") or {}).get("credits") or {}).get("general") or {}
+        balance = general.get("total_available", (user.get("credit") or {}).get("balance"))
         left = find_key(after, "items", "cart_items")
         return (f"Dry run OK: basket total {total_raw!r}, your Better credit {balance!r}. "
                 f"Basket emptied again ({'empty' if not left else 'NOT empty - check it'}). Nothing was paid.")
     amount = total_raw if isinstance(total_raw, (int, float)) else float(str(total_raw).strip("£"))
+    general = ((cart.get("data") or {}).get("credits") or {}).get("general") or {}
+    if amount and float(general.get("total_available") or 0) < float(amount):
+        raise BookingError("credit check", 402, {"message": "Not enough Better credit - top up to keep auto-booking"})
     if amount:
         api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
-            json={"credits_to_reserve": [{"amount": amount, "type": "credit"}],
+            json={"credits_to_reserve": [{"amount": amount, "type": general.get("type", "general")}],
                   "cart_source": SOURCE, "selected_user_id": None})
     terms = find_key(checkout, "terms") or []
     term_ids = [t.get("id") for t in terms if isinstance(t, dict) and t.get("id")] if isinstance(terms, list) else []
