@@ -165,7 +165,7 @@ def login(session) -> dict:
         raise SystemExit("BETTER_EMAIL / BETTER_PASSWORD secrets aren't set")
     r = session.post(f"{BASE}/api/v1/auth/login", timeout=20,
                      headers={"Client-Domain-Identifier": CLIENT_DOMAIN},  # only the login call sends this
-                     json={"user_type": "customer", "username_or_email": email, "password": password})
+                     json={"data": {"user_type": "customer", "username_or_email": email, "password": password}})
     if r.status_code in (404, 405):  # older login endpoint
         r = session.post(f"{BASE}/api/auth/customer/login", timeout=20,
                          json={"username": email, "password": password})
