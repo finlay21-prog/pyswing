@@ -1,0 +1,56 @@
+name: auto-book
+
+on:
+  schedule:
+    # Hourly, to catch cancellations.
+    - cron: "23 * * * *"
+    # Just before Better's 10pm release (one fires ~20 min early in BST, the other in GMT);
+    # book.py then waits until 22:00 and retries for a few minutes.
+    - cron: "38 20 * * *"
+    - cron: "38 21 * * *"
+  workflow_dispatch:  # "Run workflow" button, used for dry runs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-book
+  cancel-in-progress: false
+
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      # Which weeks are already booked. Kept in the Actions cache rather than the repo,
+      # because the repo is public.
+      - uses: actions/cache/restore@v4
+        with:
+          path: booking-state.json
+          key: booking-state-${{ github.run_id }}
+          restore-keys: booking-state-
+
+      - name: Book courts
+        env:
+          BETTER_EMAIL: ${{ secrets.BETTER_EMAIL }}
+          BETTER_PASSWORD: ${{ secrets.BETTER_PASSWORD }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
+          NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
+          BOOKING_STATE: booking-state.json
+          TZ: Europe/London
+        run: python book.py
+
+      - uses: actions/cache/save@v4
+        if: always() && hashFiles('booking-state.json') != ''
+        with:
+          path: booking-state.json
+          key: booking-state-${{ github.run_id }}

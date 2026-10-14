@@ -39,6 +39,21 @@ to `VENUES` in `court_watch.py`.
 - The first check of any venue (a fresh repo, or a venue you've just added) is recorded silently, so you don't get a flood of alerts.
 - If a Better venue has nothing at all on its online timetable, the summary says so with a link to check manually, rather than showing it as fully booked.
 
+## Auto-booking (Better courts)
+
+`book.py` books one session a week for each goal in `bookings.json`. Right now that's squash on
+Monday or Tuesday (5:40–7pm, nearest venue first) and tennis on Saturday or Sunday (10am–12pm).
+It pays from **Better account credit only**, never a card, and it runs just after the 10pm
+release and then hourly to catch cancellations. If you already have a court that day, it skips that week.
+
+- **Setup:** add repository secrets `BETTER_EMAIL` and `BETTER_PASSWORD`, then top up credit in your Better account.
+- **Dry run (the default):** while `"live": false`, run Actions → auto-book → Run workflow. It logs in,
+  puts the best slot in your basket, reads the price and empties the basket again, then sends the result
+  to ntfy. Nothing is paid, and scheduled runs do nothing.
+- **Go live:** set `"live": true` in `bookings.json`. Booking confirmations arrive on ntfy.
+- **Public logs:** this repo's Actions logs are public, so they never show your details or what was booked.
+- ClubSpark courts (London Fields etc.) can't be auto-booked: ClubSpark blocks GitHub, and it takes card payments only.
+
 ## Setup
 
 1. **Create a repo** on your GitHub account and push these files to it. Public repos get Actions for free. A private repo uses your Actions minutes, at about 1 minute per run.
