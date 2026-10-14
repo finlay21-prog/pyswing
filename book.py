@@ -95,6 +95,14 @@ def get_slots(session, venue: str, activity: str, date: dt.date) -> list[dict]:
     return r.json().get("data") or []
 
 
+def is_confirmed(booking) -> bool:
+    """A slot's 'booking' field can also reflect a court sitting in your basket; only count real bookings."""
+    if not isinstance(booking, dict):
+        return bool(booking)
+    status = str(booking.get("status") or booking.get("state") or "").lower()
+    return status not in ("basket", "cart", "in_cart", "reserved", "pending", "provisional")
+
+
 def minutes(hhmm: str) -> int:
     h, m = hhmm.split(":")
     return int(h) * 60 + int(m)
@@ -120,7 +128,10 @@ def candidates(session, goal: dict, state: dict) -> tuple[list[tuple], set[str]]
             except requests.RequestException as e:
                 log(f"{goal['name']}: venue {vi + 1} day +{i}: couldn't load slots ({type(e).__name__})")
                 continue
-            if any(s.get("booking") for s in day_slots):  # you already have a court that day (visible when logged in)
+            mine = [s["booking"] for s in day_slots if s.get("booking")]
+            if mine and not LIVE:
+                log(f"{goal['name']}: venue {vi + 1} day +{i}: 'booking' field on {len(mine)} slot(s): {json.dumps(shape(mine[0]))[:600]}")
+            if any(is_confirmed(b) for b in mine):  # you already have a court that day (visible when logged in)
                 booked_weeks.add(week_key(goal["name"], date))
             for s in matching(goal, day_slots):
                 start = s["starts_at"]["format_24_hour"]
@@ -303,8 +314,16 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
         notify(name, "Court booker: Better login failed",
                "Check the BETTER_EMAIL and BETTER_PASSWORD secrets in GitHub.", priority="high")
         return
+    # Clear anything left in the basket by an earlier failed run before looking.
+    mu = user.get("membership_user")
+    try:
+        empty_basket(session, mu.get("id") if isinstance(mu, dict) else mu, "start")
+    except Exception as e:
+        log(f"couldn't check basket: {type(e).__name__}")
     # Re-check while logged in: shows your own bookings and your own booking window.
     cands, booked = candidates(session, goal, state)
+    if not cands:
+        log(f"{name}: nothing bookable once logged in ({len(booked)} week(s) already booked)")
     for wk in booked:
         state[wk] = "already booked"
     for date, s in cands[:3]:
