@@ -174,36 +174,28 @@ def main():
     seen, seeded = load_state()
     now_seen, now_seeded = set(), set(seeded)
     new: dict[str, list[tuple[str, str, str]]] = {}  # sport -> [(alert line, label, booking link)]
-    summary = ["# Free courts"]
     today = dt.date.today()
     now = dt.datetime.now().strftime("%H:%M")
+    # sport -> date -> [(venue, times, link)], and sport -> [notes about venues]
+    by_day: dict[str, dict[dt.date, list]] = {}
+    notes: dict[str, list[str]] = {}
 
     elsewhere = []  # venues on platforms this run doesn't check
     for sport, venues in VENUES.items():
         if not any(cfg[0] in ENABLED for cfg in venues.values()):
             continue
-        summary.append(f"\n# {sport}")
+        days, sport_notes = by_day.setdefault(sport, {}), notes.setdefault(sport, [])
         for venue, (platform, *args) in venues.items():
             fetch, make_link = PLATFORMS[platform]
             vkey = f"{sport}|{venue}"
             if platform not in ENABLED:
-                elsewhere.append(f"\n## {venue} ({sport.lower()}, checked separately)\n"
-                                 f"- [Book]({make_link(*args, today.isoformat())})")
+                elsewhere.append(f"- [{venue}]({make_link(*args, today.isoformat())}) ({sport.lower()})")
                 now_seen |= {k for k in seen if k.startswith(f"{vkey}|")}  # keep its state intact
                 continue
             # A venue we've never checked before is recorded silently, so a new repo
             # (or newly added venue) doesn't fire an alert for every free slot.
             first_check = vkey not in seeded
-            summary.append(f"\n## {venue}")
-            unlisted = []  # consecutive days with nothing on the timetable, shown as one line
-
-            def flush_unlisted():
-                if unlisted:
-                    span = f"{unlisted[0][0]:%a %d %b}" + (
-                        f" – {unlisted[-1][0]:%a %d %b}" if len(unlisted) > 1 else "")
-                    summary.append(f"- {span}: nothing listed online, [check manually]({unlisted[0][1]})")
-                    unlisted.clear()
-
+            unlisted = []
             for i in range(DAYS_AHEAD + 1):
                 date = today + dt.timedelta(days=i)
                 ds = date.isoformat()
@@ -212,8 +204,7 @@ def main():
                     slots = fetch(*args, ds)
                 except Exception as e:
                     print(f"[{sport} {venue} {ds}] error: {e}")
-                    flush_unlisted()
-                    summary.append(f"- {date:%a %d %b} onwards: couldn't check, [check manually]({link})")
+                    sport_notes.append(f"{venue}: couldn't check from {date:%a %d %b}, [check manually]({link})")
                     # Carry over this venue's known slots so recovery doesn't re-alert them.
                     now_seen |= {k for k in seen if k.startswith(f"{vkey}|")}
                     break
@@ -221,14 +212,12 @@ def main():
                 if slots == NOT_LISTED:
                     unlisted.append((date, link))
                     continue
-                flush_unlisted()
                 if slots is None:
-                    summary.append(f"- {date:%a %d %b} onwards: not open for booking yet")
-                    break
+                    break  # later days not released yet
                 slots = sorted(s for s in slots if not (date == today and s[0] <= now))
                 times = sorted({start for start, _, _ in slots})
-                summary.append(f"- {date:%a %d %b}: "
-                               + (", ".join(f"[{t}]({link})" for t in times) or "-"))
+                if times:
+                    days.setdefault(date, []).append((venue, times, link))
                 fresh = set()
                 for start, _, court in slots:
                     key = f"{vkey}|{ds}|{start}|{court}"
@@ -239,12 +228,25 @@ def main():
                     new.setdefault(sport, []).append(
                         (f"{venue} {date:%a %d %b}: {', '.join(sorted(fresh))}",
                          f"{short_name(venue)} {date:%a %-d}", link))
-            flush_unlisted()
+            if unlisted:
+                span = f"{unlisted[0][0]:%a %d}" + (f"–{unlisted[-1][0]:%a %d %b}" if len(unlisted) > 1 else f" {unlisted[0][0]:%b}")
+                sport_notes.append(f"{venue}: nothing listed online {span}, [check manually]({unlisted[0][1]})")
 
+    summary = [f"# Free courts", f"_Updated {dt.datetime.now():%a %d %b %H:%M}. Tap a time to book._"]
+    for sport, days in sorted(by_day.items(), key=lambda kv: kv[0] != "Squash"):
+        summary.append(f"\n## {sport}")
+        if not days:
+            summary.append("Nothing free in the next week.")
+        for date in sorted(days):
+            summary.append(f"\n**{date:%a %d %b}**")
+            for venue, times, link in days[date]:
+                summary.append(f"- {venue}: " + " · ".join(f"[{t}]({link})" for t in times))
+        if notes.get(sport):
+            summary.append("")
+            summary.extend(f"- _{n}_" for n in notes[sport])
+    summary.append("\n## Check these yourself")
     # TH forbids scraping
-    summary.append("\n# Check manually\n"
-                   "\n## Bethnal Green Gardens (tennis + padel)\n"
-                   f"- [Book](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/{today}#book)")
+    summary.append(f"- [Bethnal Green Gardens](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/{today}#book) (tennis + padel)")
     summary.extend(elsewhere)
 
     text = "\n".join(summary) + "\n"

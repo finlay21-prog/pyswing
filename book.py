@@ -58,11 +58,19 @@ def shape(obj, depth=0):
     return f"<str:{len(str(obj))}>"
 
 
-def notify(goal: str, title: str, body: str, click: str = MY_BOOKINGS_URL, priority: str = "default"):
+def skip_topic() -> str | None:
+    base = os.environ.get("NTFY_TOPIC") or os.environ.get("NTFY_TOPIC_SQUASH") or os.environ.get("NTFY_TOPIC_TENNIS")
+    return f"{base}-skip" if base else None
+
+
+def notify(goal: str, title: str, body: str, click: str = MY_BOOKINGS_URL, priority: str = "default",
+           actions: str = ""):
     topic = os.environ.get(f"NTFY_TOPIC_{goal.upper()}") or os.environ.get("NTFY_TOPIC")
     if not topic:
         return
     headers = {"Title": title, "Tags": goal.lower(), "Click": click, "Priority": priority}
+    if actions:
+        headers["Actions"] = actions
     requests.post(f"https://ntfy.sh/{topic}", data=body.encode(),
                   headers={k: v.encode("latin-1", "replace").decode("latin-1") for k, v in headers.items()},
                   timeout=20)
@@ -87,7 +95,8 @@ def week_taken(state: dict, key: str) -> bool:
     if not v:
         return False
     if v.startswith("held:"):  # court left in your basket recently; try again later if you didn't pay
-        return dt.datetime.now() - dt.datetime.fromisoformat(v[5:]) < dt.timedelta(hours=HOLD_HOURS)
+        held_at = v[5:].split("|")[0]
+        return dt.datetime.now() - dt.datetime.fromisoformat(held_at) < dt.timedelta(hours=HOLD_HOURS)
     return True
 
 
@@ -258,7 +267,7 @@ def remove_items(session, uid, ids: list, debug: str):
             params={k: v for k, v in {"membership_user_id": uid}.items() if v}, json={"cart_item_ids": ids})
 
 
-def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str]:
+def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str, list]:
     """Put the court in your Better basket. If your Better credit covers the whole basket, pay with it;
     otherwise leave it there for you to pay by card in the app. Returns (outcome, detail) where outcome
     is "paid", "in basket" or "dry run". Never touches anything already in your basket."""
@@ -283,12 +292,12 @@ def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str]:
         available = float(general.get("total_available") or 0)
         can_pay = not before and available >= amount  # only pay if the basket is just this court
         if not LIVE:
-            return "dry run", (f"Basket total {cart.get('formattedTotal', amount)}, Better credit {available:g}. "
+            return "dry run", added, (f"Basket total {cart.get('formattedTotal', amount)}, Better credit {available:g}. "
                                f"When live it would {'pay from credit' if can_pay else 'leave it in your basket for you to pay'}. "
                                "Removed from your basket again; nothing was paid.")
         if not can_pay:
             keep = True
-            return "in basket", "Waiting in your Better basket - pay by card in the app to confirm."
+            return "in basket", added, "Waiting in your Better basket - pay by card in the app to confirm."
         if amount:
             api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
                 json={"credits_to_reserve": [{"amount": amount, "type": general.get("type", "general")}],
@@ -299,7 +308,7 @@ def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str]:
                          "selected_user_id": None, "source": SOURCE, "terms": [],
                          "item_hash": cart.get("itemHash")})
         keep = True
-        return "paid", f"Paid from Better credit (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})."
+        return "paid", added, f"Paid from Better credit (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})."
     finally:
         if added and not keep:  # dry run or failure: take out only what we put in
             try:
@@ -350,7 +359,7 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
     last_error = ""
     for date, s in cands[:3]:
         try:
-            outcome, detail = book(session, user, date, s)
+            outcome, added, detail = book(session, user, date, s)
         except BookingError as e:
             log(f"{name}: attempt failed: {e.message()}")
             last_error = e.message()
@@ -367,14 +376,64 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
             notify(sport, f"Booked {sport.lower()}: {when}", f"{describe(date, s)}\n{detail}\n{cancel}",
                    priority="high")
         elif outcome == "in basket":
-            state[week_key(name, date)] = f"held:{dt.datetime.now():%Y-%m-%dT%H:%M}"
+            key = week_key(name, date)
+            state[key] = f"held:{dt.datetime.now():%Y-%m-%dT%H:%M}|" + ",".join(map(str, added))
+            actions = f'view, "Pay now", {BASKET_URL}'
+            if skip_topic():
+                actions += f'; http, "Skip this week", https://ntfy.sh/{skip_topic()}, method=POST, body={key.replace(" ", "+")}, clear=true'
             notify(sport, f"Pay now: {sport.lower()} {when} is in your basket",
-                   f"{describe(date, s)}\nTap to pay in Better before someone else gets it.\n{cancel}",
-                   click=BASKET_URL, priority="high")
+                   f"{describe(date, s)}\nTap to pay in Better before someone else gets it. "
+                   f"Not this week? Tap Skip and it's taken out of your basket.\n{cancel}",
+                   click=BASKET_URL, priority="high", actions=actions)
         else:
             notify(sport, f"Dry run: would get {sport.lower()} {when}", f"{describe(date, s)}\n{detail}")
         return
     notify(sport, f"Court booker couldn't get {sport.lower()}", f"Tried {describe(*cands[0])}\n{last_error}")
+
+
+def apply_skips(state: dict):
+    """Weeks you tapped "Skip this week" on (sent to the <topic>-skip ntfy topic): stop booking them
+    and take any court the booker left in your basket for that week back out."""
+    topic = skip_topic()
+    if not topic or not LIVE:
+        return
+    try:
+        r = requests.get(f"https://ntfy.sh/{topic}/json", params={"poll": "1", "since": "12h"}, timeout=20)
+        keys = {json.loads(line).get("message", "").strip().replace("+", " ")
+                for line in r.text.splitlines() if line.strip()}
+    except (requests.RequestException, ValueError) as e:
+        log(f"couldn't read skips: {type(e).__name__}")
+        return
+    remove, skipped = [], []
+    for key in sorted(k for k in keys if k.startswith("week:")):
+        prev = state.get(key, "")
+        if prev == "skipped" or prev == "booked":
+            continue
+        if prev.startswith("held:") and "|" in prev:
+            remove += [int(i) if i.isdigit() else i for i in prev.split("|", 1)[1].split(",") if i]
+        state[key] = "skipped"
+        skipped.append(key)
+    if not skipped:
+        return
+    log(f"skipping {len(skipped)} week(s)")
+    if remove:
+        session = requests.Session()
+        session.headers.update(HEADERS)
+        try:
+            user = login(session)
+            mu = user.get("membership_user")
+            cart_ids = {i["id"] for i in basket_items(api(session, "GET", CART, "load basket"))}
+            remove_items(session, mu.get("id") if isinstance(mu, dict) else mu,
+                         [i for i in remove if i in cart_ids], "skip")
+        except Exception as e:
+            log(f"couldn't remove skipped court from basket: {type(e).__name__}")
+    for key in skipped:
+        _, goal, week = key.split(":", 2)
+        sport = next((g.get("sport", g["name"]) for g in CONFIG["goals"] if g["name"] == goal), goal)
+        y, w = week.split("-W")
+        monday = dt.date.fromisocalendar(int(y), int(w), 1)
+        notify(sport, f"Skipped: {goal} (week of {monday:%a %d %b})",
+               "Taken out of your basket. The booker won't try again that week.")
 
 
 def main():
@@ -384,6 +443,7 @@ def main():
         return
     at_release = wait_for_release()
     state = load_state()
+    apply_skips(state)
     log(f"mode: {'LIVE' if LIVE else 'dry run'}")
     for goal in CONFIG["goals"]:
         if only and goal["name"] not in only:
