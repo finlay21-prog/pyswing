@@ -231,37 +231,42 @@ def book(session, user: dict, date: dt.date, s: dict) -> str:
     uid = mu.get("id") if isinstance(mu, dict) else mu
     # Start from an empty basket so we only pay for this court.
     empty_basket(session, uid, "before")
-    api(session, "POST", f"{CART}/add", "add to basket",
-        json={"items": [{"id": s["id"], "type": s.get("cart_type", "purchasableOccurrence"),
-                         "pricing_option_id": s.get("pricing_option_id"), "apply_benefit": True,
-                         "activity_restriction_ids": s.get("restriction_ids") or []}],
-              "membership_user_id": uid, "selected_user_id": None})
-    cart = api(session, "GET", CART, "load basket")
-    total = find_key(cart, "total", "total_price", "amount_due")
-    total_raw = total.get("raw", total.get("value")) if isinstance(total, dict) else total
-    item_hash = find_key(cart, "item_hash", "itemHash")
-    checkout = api(session, "GET", f"{BASE}/api/checkout/", "load checkout")
-    if not LIVE:
-        after = empty_basket(session, uid, "dry run cleanup")
-        general = ((cart.get("data") or {}).get("credits") or {}).get("general") or {}
-        balance = general.get("total_available", (user.get("credit") or {}).get("balance"))
-        left = find_key(after, "items", "cart_items")
-        return (f"Dry run OK: basket total {total_raw!r}, your Better credit {balance!r}. "
-                f"Basket emptied again ({'empty' if not left else 'NOT empty - check it'}). Nothing was paid.")
-    amount = total_raw if isinstance(total_raw, (int, float)) else float(str(total_raw).strip("£"))
-    general = ((cart.get("data") or {}).get("credits") or {}).get("general") or {}
-    if amount and float(general.get("total_available") or 0) < float(amount):
-        raise BookingError("credit check", 402, {"message": "Not enough Better credit - top up to keep auto-booking"})
-    if amount:
-        api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
-            json={"credits_to_reserve": [{"amount": amount, "type": general.get("type", "general")}],
-                  "cart_source": SOURCE, "selected_user_id": None})
-    terms = find_key(checkout, "terms") or []
-    term_ids = [t.get("id") for t in terms if isinstance(t, dict) and t.get("id")] if isinstance(terms, list) else []
-    done = api(session, "POST", f"{BASE}/api/checkout/complete", "complete checkout",
-               json={"completed_waivers": [], "payments": [{"tender_type": "credit", "amount": amount}] if amount else [],
-                     "selected_user_id": None, "source": SOURCE, "terms": term_ids or [1], "item_hash": item_hash})
-    return f"Booked (order {find_key(done, 'complete_order_id', 'order_id', 'id') or 'confirmed'})"
+    completed = False
+    try:
+        api(session, "POST", f"{CART}/add", "add to basket",
+            json={"items": [{"id": s["id"], "type": s.get("cart_type", "purchasableOccurrence"),
+                             "pricing_option_id": s.get("pricing_option_id"), "apply_benefit": True,
+                             "activity_restriction_ids": s.get("restriction_ids") or []}],
+                  "membership_user_id": uid, "selected_user_id": None})
+        cart = (api(session, "GET", CART, "load basket").get("data") or {})
+        amount = cart.get("total")
+        if not isinstance(amount, (int, float)):
+            raise BookingError("read basket total", 0, {"message": "basket total missing"})
+        general = (cart.get("credits") or {}).get("general") or {}
+        available = float(general.get("total_available") or 0)
+        if not LIVE:
+            return (f"Dry run OK: basket total {cart.get('formattedTotal', amount)}, Better credit available "
+                    f"{available:g}{' (enough)' if available >= amount else ' - NOT enough, top up before going live'}. "
+                    "Basket emptied again. Nothing was paid.")
+        if available < amount:
+            raise BookingError("credit check", 402, {"message": "Not enough Better credit - top up to keep auto-booking"})
+        if amount:
+            api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
+                json={"credits_to_reserve": [{"amount": amount, "type": general.get("type", "general")}],
+                      "cart_source": SOURCE, "selected_user_id": None})
+        done = api(session, "POST", f"{BASE}/api/checkout/complete", "complete checkout",
+                   json={"completed_waivers": [],
+                         "payments": [{"tender_type": "credit", "amount": amount}] if amount else [],
+                         "selected_user_id": None, "source": SOURCE, "terms": [],
+                         "item_hash": cart.get("itemHash")})
+        completed = True
+        return f"Booked (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})"
+    finally:
+        if not completed:  # dry run, or something failed: don't leave a court sitting in your basket
+            try:
+                empty_basket(session, uid, "cleanup")
+            except Exception as e:
+                log(f"cleanup failed: {type(e).__name__}")
 
 
 # ------------------------------------------------------------------- main ----
