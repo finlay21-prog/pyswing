@@ -9,9 +9,11 @@ Based on [danol0/pyswing](https://github.com/danol0/pyswing), with squash added.
 | Sport  | Venue                   | Booking system | Checked from   |
 |--------|-------------------------|----------------|----------------|
 | Tennis | Haggerston Park         | Better         | GitHub Actions |
+| Tennis | Britannia (rooftop)     | Better         | GitHub Actions |
 | Tennis | Rosemary Gardens        | Better         | GitHub Actions |
 | Tennis | Joe White Gardens       | ClubSpark      | Phone          |
 | Tennis | London Fields           | ClubSpark      | Phone          |
+| Tennis | Hackney Downs           | ClubSpark      | Phone          |
 | Tennis | Clissold Park           | ClubSpark      | Phone          |
 | Squash | Britannia               | Better         | GitHub Actions |
 | Squash | Ironmonger Row Baths    | Better         | GitHub Actions |

@@ -94,9 +94,11 @@ PLATFORMS = {"better": (fetch_better, better_link), "clubspark": (fetch_clubspar
 VENUES = {
     "Tennis": {
         "Haggerston Park": ("better", "hackney-parks", "tennis-court-outdoor"),
+        "Britannia (rooftop)": ("better", "britannia-leisure-centre", "tennis-court-outdoor"),
         "Rosemary Gardens": ("better", "islington-tennis-centre", "rosemary-gardens-tennis"),
         "Joe White Gardens": ("clubspark", "AskeGardens"),
         "London Fields": ("clubspark", "LondonFieldsPark"),
+        "Hackney Downs": ("clubspark", "HackneyDowns"),
         "Clissold Park": ("clubspark", "ClissoldParkHackney"),
     },
     "Squash": {  # nearest to E2 first
