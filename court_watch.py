@@ -13,8 +13,8 @@ import requests
 # If no topic is set at all, the script only prints the summary (handy for local runs).
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 STATE_FILE = Path(os.environ.get("STATE_FILE", "seen_slots.json"))
-SUMMARY_FILE = Path("courts.md")
-SUMMARY_URL = os.environ.get("SUMMARY_URL", "")
+SUMMARY_FILE = Path(os.environ.get("SUMMARY_FILE", "courts.md"))
+SUMMARY_URL = os.environ.get("SUMMARY_URL", "")  # page listing every free court, for the "All courts" button
 DAYS_AHEAD = 7  # ClubSpark opens each new day at 6pm, 7 days ahead; Better opens at 10pm, ~6 days ahead
 
 UA = {"User-Agent": "Mozilla/5.0"}
@@ -120,17 +120,40 @@ def topic_for(sport: str):
 
 
 # ----------------------------------------------------------------- core -----
-def notify(topic: str, by_sport: dict[str, list[str]]):
+def short_name(venue: str) -> str:
+    for suffix in (" Leisure Centre", " Gardens", " Park"):
+        venue = venue.removesuffix(suffix)
+    return venue
+
+
+def _button(label: str, url: str) -> str:
+    label = label.replace(",", " ").replace(";", " ").replace('"', "")
+    return f'view, "{label}", {url}, clear=true'
+
+
+def notify(topic: str, by_sport: dict[str, list[tuple[str, str, str]]]):
+    """by_sport: sport -> [(alert line, short label, booking link), ...]"""
     mixed = len(by_sport) > 1
-    lines = [f"{sport} · {line}" if mixed else line
-             for sport, sport_lines in by_sport.items() for line in sport_lines]
+    items = [(f"{sport} · {line}" if mixed else line, label, link)
+             for sport, sport_items in by_sport.items() for line, label, link in sport_items]
+    lines = [line for line, _, _ in items]
     # ntfy caps message bodies at 4096 bytes
     body = "\n".join(lines[:30] + ([f"...and {len(lines) - 30} more"] if len(lines) > 30 else []))
     title = "New courts free" if mixed else f"New {next(iter(by_sport)).lower()} courts free"
-    headers = {"Title": title, "Tags": ",".join(NTFY_TAGS.get(s, s.lower()) for s in by_sport)}
-    if SUMMARY_URL:
-        headers["Click"] = SUMMARY_URL
-    requests.post(f"https://ntfy.sh/{topic}", data=body.encode(), headers=headers, timeout=20)
+    # Tapping the alert opens the booking page for the first new slot; up to 3 buttons
+    # (ntfy's limit) open the others, with "All courts" taking the last one if there are more.
+    buttons = [_button(f"Book {label}", link) for _, label, link in items]
+    if len(buttons) > 3 and SUMMARY_URL:
+        buttons = buttons[:2] + [_button("All courts", SUMMARY_URL)]
+    headers = {"Title": title,
+               "Tags": ",".join(NTFY_TAGS.get(s, s.lower()) for s in by_sport),
+               "Click": items[0][2],
+               "Actions": "; ".join(buttons[:3])}
+    r = requests.post(f"https://ntfy.sh/{topic}", data=body.encode(),
+                      headers={k: v.encode("latin-1", "replace").decode("latin-1") for k, v in headers.items()},
+                      timeout=20)
+    if not r.ok:
+        print(f"ntfy error {r.status_code}: {r.text[:200]}")
 
 
 def load_state():
@@ -146,7 +169,7 @@ def load_state():
 def main():
     seen, seeded = load_state()
     now_seen, now_seeded = set(), set(seeded)
-    new: dict[str, list[str]] = {}  # sport -> alert lines
+    new: dict[str, list[tuple[str, str, str]]] = {}  # sport -> [(alert line, label, booking link)]
     summary = ["# Free courts"]
     today = dt.date.today()
     now = dt.datetime.now().strftime("%H:%M")
@@ -210,7 +233,8 @@ def main():
                         fresh.add(start)
                 if fresh and not first_check:
                     new.setdefault(sport, []).append(
-                        f"{venue} {date:%a %d %b}: {', '.join(sorted(fresh))}")
+                        (f"{venue} {date:%a %d %b}: {', '.join(sorted(fresh))}",
+                         f"{short_name(venue)} {date:%a %-d}", link))
             flush_unlisted()
 
     # TH forbids scraping

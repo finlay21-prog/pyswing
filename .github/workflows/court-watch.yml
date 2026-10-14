@@ -38,9 +38,10 @@ jobs:
           NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
           NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
           STATE_FILE: seen_slots.json
+          SUMMARY_FILE: free-courts.md
           # ClubSpark's firewall blocks GitHub's servers; those venues run on the phone (phone/).
           PLATFORMS: better
-          SUMMARY_URL: ${{ vars.GIST_ID && format('https://gist.github.com/{0}', vars.GIST_ID) || format('https://github.com/{0}/actions', github.repository) }}
+          SUMMARY_URL: ${{ vars.GIST_ID && format('https://gist.github.com/{0}', vars.GIST_ID) || format('https://github.com/{0}/blob/main/free-courts.md', github.repository) }}
           TZ: Europe/London
         run: python court_watch.py
 
@@ -49,11 +50,11 @@ jobs:
           [ -f seen_slots.json ] || exit 0  # no ntfy topic set, so nothing to save
           git config user.name "court-watch-bot"
           git config user.email "court-watch-bot@users.noreply.github.com"
-          git add seen_slots.json
-          git diff --cached --quiet || { git commit -m "update seen slots [skip ci]" && git push; }
+          git add seen_slots.json free-courts.md
+          git diff --cached --quiet || { git commit -m "update free courts [skip ci]" && git push; }
 
       - name: Update summary gist
         if: env.GIST_ID != ''
         env:
           GH_TOKEN: ${{ secrets.GIST_TOKEN }}
-        run: gh gist edit "$GIST_ID" --filename courts.md courts.md
+        run: gh gist edit "$GIST_ID" --filename courts.md free-courts.md

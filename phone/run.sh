@@ -11,6 +11,7 @@ set +a
 
 PLATFORMS=clubspark \
 STATE_FILE="$HOME/.pyswing-state.json" \
+SUMMARY_URL="https://github.com/finlay21-prog/pyswing/blob/main/free-courts.md" \
 TZ=Europe/London \
 python court_watch.py > "$HOME/pyswing-last-run.log" 2>&1
 status=$?
