@@ -99,8 +99,10 @@ VENUES = {
         "London Fields": ("clubspark", "LondonFieldsPark"),
         "Clissold Park": ("clubspark", "ClissoldParkHackney"),
     },
-    "Squash": {
+    "Squash": {  # nearest to E2 first
         "Britannia": ("better", "britannia-leisure-centre", "squash-40min"),
+        "Ironmonger Row": ("better", "ironmonger-row-baths", "squash-40min"),
+        "Finsbury": ("better", "finsbury-leisure-centre", "squash-40min"),
         "Clissold Leisure Centre": ("better", "clissold-leisure-centre", "squash-40min"),
         "Sobell": ("better", "sobell-leisure-centre", "squash-40min"),
     },

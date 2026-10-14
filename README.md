@@ -14,6 +14,8 @@ Based on [danol0/pyswing](https://github.com/danol0/pyswing), with squash added.
 | Tennis | London Fields           | ClubSpark      | Phone          |
 | Tennis | Clissold Park           | ClubSpark      | Phone          |
 | Squash | Britannia               | Better         | GitHub Actions |
+| Squash | Ironmonger Row Baths    | Better         | GitHub Actions |
+| Squash | Finsbury Leisure Centre | Better         | GitHub Actions |
 | Squash | Clissold Leisure Centre | Better         | GitHub Actions |
 | Squash | Sobell                  | Better         | GitHub Actions |
 
