@@ -25,7 +25,7 @@ import requests
 BASE = "https://better-admin.org.uk"
 CART = f"{BASE}/api/activities/cart"
 SOURCE = "activity-booking"
-CLIENT_DOMAIN = "better.org.uk"
+CLIENT_DOMAIN = "better-admin.org.uk"  # what the booking site sends: its API host
 MY_BOOKINGS_URL = "https://myaccount.better.org.uk/"
 RELEASE_TIME = dt.time(22, 0)  # Better releases new days at 10pm
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
