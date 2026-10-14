@@ -111,6 +111,22 @@ VENUES = {
 }
 NTFY_TAGS = {"Tennis": "tennis", "Squash": "squash"}
 
+# Only alert for slots in these windows (the free-courts page still lists everything).
+# days: 0=Mon ... 6=Sun; a slot qualifies if it starts between "from" and "to".
+ALERT_WINDOWS = {
+    "Tennis": {"days": {5, 6}, "from": "09:00", "to": "17:00"},  # weekends, finishing by 6pm
+}
+
+# Courts we can't check automatically (Tower Hamlets turns away automated requests), so a
+# reminder with links goes out on Friday evening for the weekend.
+TH_BOOK = "https://tennistowerhamlets.com/book/courts/{park}/{date}"
+CHECK_YOURSELF = {"Bethnal Green Gardens": "bethnal-green-gardens", "Victoria Park": "victoria-park"}
+
+
+def wanted(sport: str, date: dt.date, start: str) -> bool:
+    w = ALERT_WINDOWS.get(sport)
+    return not w or (date.weekday() in w["days"] and w["from"] <= start <= w["to"])
+
 # Which booking platforms this run checks, e.g. PLATFORMS=better. Default: all.
 # ClubSpark's firewall blocks cloud servers (incl. GitHub Actions), so GitHub runs
 # PLATFORMS=better and a phone/home machine runs PLATFORMS=clubspark (see phone/).
@@ -161,17 +177,40 @@ def notify(topic: str, by_sport: dict[str, list[tuple[str, str, str]]]):
 
 
 def load_state():
-    """State is {"venues": [...checked at least once...], "slots": [...keys...]}."""
+    """State is {"venues": [...checked at least once...], "slots": [...keys...], "reminders": [...]}."""
     if not STATE_FILE.exists():
-        return set(), set()
+        return set(), set(), set()
     raw = json.loads(STATE_FILE.read_text() or "{}")
     if isinstance(raw, list):  # original pyswing format; keys differ, so start afresh (silently)
-        return set(), set()
-    return set(raw.get("slots", [])), set(raw.get("venues", []))
+        return set(), set(), set()
+    return set(raw.get("slots", [])), set(raw.get("venues", [])), set(raw.get("reminders", []))
+
+
+def weekend_reminder(reminders: set) -> None:
+    """Friday 5-9pm: one ping with links to the courts we can't check, for Saturday."""
+    now = dt.datetime.now()
+    key = f"Tennis|{now:%G-W%V}"
+    topic = topic_for("Tennis")
+    if not topic or now.weekday() != 4 or not 17 <= now.hour < 21 or key in reminders:
+        return
+    sat = (now + dt.timedelta(days=1)).date().isoformat()
+    buttons = [_button(f"{name} Sat", TH_BOOK.format(park=slug, date=sat)) for name, slug in CHECK_YOURSELF.items()]
+    if SUMMARY_URL:
+        buttons.append(_button("All courts", SUMMARY_URL))
+    r = requests.post(f"https://ntfy.sh/{topic}", timeout=20,
+                      data=("Weekend tennis: these courts can't be checked automatically. "
+                            "Have a look for Saturday and Sunday, 9am-6pm.").encode(),
+                      headers={"Title": "Check Tower Hamlets tennis courts", "Tags": "tennis",
+                               "Click": TH_BOOK.format(park="bethnal-green-gardens", date=sat),
+                               "Actions": "; ".join(buttons[:3])})
+    if r.ok:
+        reminders.add(key)
+    else:
+        print(f"ntfy error {r.status_code}: {r.text[:200]}")
 
 
 def main():
-    seen, seeded = load_state()
+    seen, seeded, reminders = load_state()
     now_seen, now_seeded = set(), set(seeded)
     new: dict[str, list[tuple[str, str, str]]] = {}  # sport -> [(alert line, label, booking link)]
     today = dt.date.today()
@@ -222,7 +261,7 @@ def main():
                 for start, _, court in slots:
                     key = f"{vkey}|{ds}|{start}|{court}"
                     now_seen.add(key)
-                    if key not in seen:
+                    if key not in seen and wanted(sport, date, start):
                         fresh.add(start)
                 if fresh and not first_check:
                     new.setdefault(sport, []).append(
@@ -246,7 +285,8 @@ def main():
             summary.extend(f"- _{n}_" for n in notes[sport])
     summary.append("\n## Check these yourself")
     # TH forbids scraping
-    summary.append(f"- [Bethnal Green Gardens](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/{today}#book) (tennis + padel)")
+    for name, slug in CHECK_YOURSELF.items():
+        summary.append(f"- [{name}]({TH_BOOK.format(park=slug, date=today)}) (tennis, Tower Hamlets)")
     summary.extend(elsewhere)
 
     text = "\n".join(summary) + "\n"
@@ -261,8 +301,11 @@ def main():
                 by_topic.setdefault(topics[sport], {})[sport] = lines
         for topic, by_sport in by_topic.items():
             notify(topic, by_sport)
-        STATE_FILE.write_text(json.dumps({"venues": sorted(now_seeded),
-                                          "slots": sorted(now_seen)}, indent=0))
+        if "better" in ENABLED:  # the GitHub run, so it's sent once rather than by the phone too
+            weekend_reminder(reminders)
+        cutoff = f"Tennis|{dt.date.today() - dt.timedelta(days=60):%G-W%V}"
+        STATE_FILE.write_text(json.dumps({"venues": sorted(now_seeded), "slots": sorted(now_seen),
+                                          "reminders": sorted(r for r in reminders if r >= cutoff)}, indent=0))
 
 
 if __name__ == "__main__":

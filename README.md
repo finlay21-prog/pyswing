@@ -34,6 +34,9 @@ to `VENUES` in `court_watch.py`.
 
 ## How it behaves
 
+- **Tennis alerts are for weekends only, 9am–6pm** (`ALERT_WINDOWS` in `court_watch.py`). Squash alerts cover any time. The free-courts page always lists everything.
+- Tower Hamlets courts (Bethnal Green Gardens, Victoria Park) turn away automated checks, so a reminder with links goes out on Friday evenings instead.
+
 - Runs hourly on GitHub Actions and checks the next 7 days (or as far as each site has opened).
 - Alerts only on slots that weren't free last time, so you hear about cancellations and newly opened days.
 - The first check of any venue (a fresh repo, or a venue you've just added) is recorded silently, so you don't get a flood of alerts.
