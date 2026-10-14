@@ -41,17 +41,20 @@ to `VENUES` in `court_watch.py`.
 
 ## Auto-booking (Better courts)
 
-`book.py` books one session a week for each goal in `bookings.json`. Right now that's squash on
-Monday or Tuesday (5:40–7pm, nearest venue first) and tennis on Saturday or Sunday (10am–12pm).
-It pays from **Better account credit only**, never a card, and it runs just after the 10pm
-release and then hourly to catch cancellations. If you already have a court that day, it skips that week.
-It only books courts starting at least 24 hours away (`min_hours_notice`). Better refunds to account credit if you cancel at least 4 hours before, so you always have time to cancel free. The booking message tells you the cancel-by time.
+`book.py` gets one court a week for each goal in `bookings.json`: squash on Monday or Tuesday
+(5:40–7pm), squash on Friday (around 3pm), and tennis on Saturday or Sunday (10am–12pm). It goes
+for the nearest venue first, runs just after Better's 10pm release, then hourly to catch cancellations.
 
-- **Setup:** add repository secrets `BETTER_EMAIL` and `BETTER_PASSWORD`, then top up credit in your Better account.
-- **Dry run (the default):** while `"live": false`, run Actions → auto-book → Run workflow. It logs in,
-  puts the best slot in your basket, reads the price and empties the basket again, then sends the result
-  to ntfy. Nothing is paid, and scheduled runs do nothing.
-- **Go live:** set `"live": true` in `bookings.json`. Booking confirmations arrive on ntfy.
+- **How it pays:** Better has no credit top-up, so normally it **puts the court in your Better basket
+  and sends you a "Pay now" alert**. Tap it and pay by card in the Better app or site. If your Better
+  credit (from earlier cancellations) covers the court, it pays from credit instead and tells you it's booked.
+  It never touches anything else in your basket.
+- **Cancelling:** it only picks courts starting at least 24 hours away (`min_hours_notice`). Better refunds
+  to credit if you cancel at least 4 hours before, and every alert tells you the cancel-by time.
+- **Skips:** a week where you already have a court that day. If you don't pay for a held court, it tries again 3 hours later.
+- **Setup:** repository secrets `BETTER_EMAIL` and `BETTER_PASSWORD`.
+- **Dry run (while `"live": false`):** run Actions → auto-book → Run workflow. It adds the court to your basket,
+  reads the price, removes it again and sends the result to ntfy. Scheduled runs do nothing.
 - **Public logs:** this repo's Actions logs are public, so they never show your details or what was booked.
 - ClubSpark courts (London Fields etc.) can't be auto-booked: ClubSpark blocks GitHub, and it takes card payments only.
 

@@ -82,6 +82,15 @@ def save_state(state: dict):
     STATE_FILE.write_text(json.dumps(keep, indent=1))
 
 
+def week_taken(state: dict, key: str) -> bool:
+    v = state.get(key)
+    if not v:
+        return False
+    if v.startswith("held:"):  # court left in your basket recently; try again later if you didn't pay
+        return dt.datetime.now() - dt.datetime.fromisoformat(v[5:]) < dt.timedelta(hours=HOLD_HOURS)
+    return True
+
+
 def week_key(goal: str, date: dt.date) -> str:
     y, w, _ = date.isocalendar()
     return f"week:{goal}:{y}-W{w:02d}"
@@ -123,7 +132,7 @@ def candidates(session, goal: dict, state: dict) -> tuple[list[tuple], set[str]]
     for vi, (venue, activity) in enumerate(goal["venues_nearest_first"]):
         for i in range(8):
             date = now.date() + dt.timedelta(days=i)
-            if DAYS[date.weekday()] not in goal["days"] or week_key(goal["name"], date) in state:
+            if DAYS[date.weekday()] not in goal["days"] or week_taken(state, week_key(goal["name"], date)):
                 continue
             try:
                 day_slots = get_slots(session, venue, activity, date)
@@ -234,41 +243,52 @@ class BookingError(Exception):
         return f"{self.args[0]} failed (HTTP {status}){': ' + str(msg)[:200] if msg else ''}"
 
 
-def empty_basket(session, uid, debug: str):
-    cart = api(session, "GET", CART, f"{debug}: load basket")
+BASKET_URL = "https://bookings.better.org.uk/basket"
+HOLD_HOURS = 3  # after putting a court in your basket, leave that week alone this long
+
+
+def basket_items(cart: dict) -> list[dict]:
     items = find_key(cart, "items", "cart_items") or []
-    ids = [i.get("id") for i in items if isinstance(i, dict) and i.get("id")] if isinstance(items, list) else []
+    return [i for i in items if isinstance(i, dict) and i.get("id")] if isinstance(items, list) else []
+
+
+def remove_items(session, uid, ids: list, debug: str):
     if ids:
         api(session, "POST", f"{CART}/remove", f"{debug}: remove {len(ids)} item(s)",
             params={k: v for k, v in {"membership_user_id": uid}.items() if v}, json={"cart_item_ids": ids})
-    return cart
 
 
-def book(session, user: dict, date: dt.date, s: dict) -> str:
-    """Basket -> credit -> checkout. Returns a status line. In dry-run mode stops before paying."""
+def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str]:
+    """Put the court in your Better basket. If your Better credit covers the whole basket, pay with it;
+    otherwise leave it there for you to pay by card in the app. Returns (outcome, detail) where outcome
+    is "paid", "in basket" or "dry run". Never touches anything already in your basket."""
     mu = user.get("membership_user")  # None unless you have a Better membership
     uid = mu.get("id") if isinstance(mu, dict) else mu
-    # Start from an empty basket so we only pay for this court.
-    empty_basket(session, uid, "before")
-    completed = False
+    before = {i["id"] for i in basket_items(api(session, "GET", CART, "load basket"))}
+    added, keep = [], False
     try:
         api(session, "POST", f"{CART}/add", "add to basket",
             json={"items": [{"id": s["id"], "type": s.get("cart_type", "purchasableOccurrence"),
                              "pricing_option_id": s.get("pricing_option_id"), "apply_benefit": True,
                              "activity_restriction_ids": s.get("restriction_ids") or []}],
                   "membership_user_id": uid, "selected_user_id": None})
-        cart = (api(session, "GET", CART, "load basket").get("data") or {})
+        cart = api(session, "GET", CART, "load basket").get("data") or {}
+        added = [i["id"] for i in basket_items(cart) if i["id"] not in before]
+        if not added:
+            raise BookingError("add to basket", 0, {"message": "court didn't appear in the basket"})
         amount = cart.get("total")
         if not isinstance(amount, (int, float)):
             raise BookingError("read basket total", 0, {"message": "basket total missing"})
         general = (cart.get("credits") or {}).get("general") or {}
         available = float(general.get("total_available") or 0)
+        can_pay = not before and available >= amount  # only pay if the basket is just this court
         if not LIVE:
-            return (f"Dry run OK: basket total {cart.get('formattedTotal', amount)}, Better credit available "
-                    f"{available:g}{' (enough)' if available >= amount else ' - NOT enough, top up before going live'}. "
-                    "Basket emptied again. Nothing was paid.")
-        if available < amount:
-            raise BookingError("credit check", 402, {"message": "Not enough Better credit - top up to keep auto-booking"})
+            return "dry run", (f"Basket total {cart.get('formattedTotal', amount)}, Better credit {available:g}. "
+                               f"When live it would {'pay from credit' if can_pay else 'leave it in your basket for you to pay'}. "
+                               "Removed from your basket again; nothing was paid.")
+        if not can_pay:
+            keep = True
+            return "in basket", "Waiting in your Better basket - pay by card in the app to confirm."
         if amount:
             api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
                 json={"credits_to_reserve": [{"amount": amount, "type": general.get("type", "general")}],
@@ -278,12 +298,12 @@ def book(session, user: dict, date: dt.date, s: dict) -> str:
                          "payments": [{"tender_type": "credit", "amount": amount}] if amount else [],
                          "selected_user_id": None, "source": SOURCE, "terms": [],
                          "item_hash": cart.get("itemHash")})
-        completed = True
-        return f"Booked (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})"
+        keep = True
+        return "paid", f"Paid from Better credit (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})."
     finally:
-        if not completed:  # dry run, or something failed: don't leave a court sitting in your basket
+        if added and not keep:  # dry run or failure: take out only what we put in
             try:
-                empty_basket(session, uid, "cleanup")
+                remove_items(session, uid, added, "cleanup")
             except Exception as e:
                 log(f"cleanup failed: {type(e).__name__}")
 
@@ -303,7 +323,7 @@ def wait_for_release():
 def run_goal(goal: dict, state: dict, attempts: int) -> None:
     anon = requests.Session()
     anon.headers.update(HEADERS)
-    name = goal["name"]
+    name, sport = goal["name"], goal.get("sport", goal["name"])
     for attempt in range(attempts):
         cands, _ = candidates(anon, goal, state)
         if cands:
@@ -319,22 +339,18 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
     try:
         user = login(session)
     except LoginError:
-        notify(name, "Court booker: Better login failed",
+        notify(sport, "Court booker: Better login failed",
                "Check the BETTER_EMAIL and BETTER_PASSWORD secrets in GitHub.", priority="high")
         return
-    # Clear anything left in the basket by an earlier failed run before looking.
-    mu = user.get("membership_user")
-    try:
-        empty_basket(session, mu.get("id") if isinstance(mu, dict) else mu, "start")
-    except Exception as e:
-        log(f"couldn't check basket: {type(e).__name__}")
     # Re-check while logged in: shows your own bookings and your own booking window.
     cands, booked = candidates(session, goal, state)
     if not cands:
         log(f"{name}: nothing bookable once logged in ({len(booked)} week(s) already booked)")
+        return
+    last_error = ""
     for date, s in cands[:3]:
         try:
-            result = book(session, user, date, s)
+            outcome, detail = book(session, user, date, s)
         except BookingError as e:
             log(f"{name}: attempt failed: {e.message()}")
             last_error = e.message()
@@ -343,20 +359,22 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
             log(f"{name}: attempt failed: {type(e).__name__}: {e}")
             last_error = f"{type(e).__name__}: {e}"
             continue
-        log(f"{name}: {'booked' if LIVE else 'dry run ok'} (details sent to ntfy)")
-        if LIVE:
+        log(f"{name}: {outcome} (details sent to ntfy)")
+        when = f"{date:%a %d %b} {s['starts_at']['format_24_hour']}"
+        cancel = f"Can't make it? Cancel in the Better app by {cancel_by(date, s):%a %d %b %H:%M} for a refund to credit."
+        if outcome == "paid":
             state[week_key(name, date)] = "booked"
-            notify(name, f"Booked {name.lower()}: {date:%a %d %b} {s['starts_at']['format_24_hour']}",
-                   f"{describe(date, s)}\nPaid from Better credit. Can't make it? Cancel in the Better app by "
-                   f"{cancel_by(date, s):%a %d %b %H:%M} to get the credit back.",
+            notify(sport, f"Booked {sport.lower()}: {when}", f"{describe(date, s)}\n{detail}\n{cancel}",
                    priority="high")
+        elif outcome == "in basket":
+            state[week_key(name, date)] = f"held:{dt.datetime.now():%Y-%m-%dT%H:%M}"
+            notify(sport, f"Pay now: {sport.lower()} {when} is in your basket",
+                   f"{describe(date, s)}\nTap to pay in Better before someone else gets it.\n{cancel}",
+                   click=BASKET_URL, priority="high")
         else:
-            notify(name, f"Dry run: would book {name.lower()}", f"{describe(date, s)}\n{result}")
+            notify(sport, f"Dry run: would get {sport.lower()} {when}", f"{describe(date, s)}\n{detail}")
         return
-    else:
-        if cands:
-            notify(name, f"Court booker couldn't book {name.lower()}",
-                   f"Tried {describe(*cands[0])}\n{last_error}")
+    notify(sport, f"Court booker couldn't get {sport.lower()}", f"Tried {describe(*cands[0])}\n{last_error}")
 
 
 def main():
