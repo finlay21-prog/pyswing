@@ -1,5 +1,5 @@
 {
-  "live": false,
+  "live": true,
   "_note": "Each goal books at most one court a week. If your Better credit covers it the booker pays from credit; otherwise it puts the court in your Better basket and pings you to pay by card. It only picks courts starting at least min_hours_notice away; Better refunds to credit if you cancel 4+ hours before.",
   "free_cancel_hours": 4,
   "min_hours_notice": 24,
