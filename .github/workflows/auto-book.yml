@@ -35,8 +35,8 @@ jobs:
       - uses: actions/cache/restore@v4
         with:
           path: booking-state.json
-          key: booking-state-${{ github.run_id }}
-          restore-keys: booking-state-
+          key: booking-state-v2-${{ github.run_id }}
+          restore-keys: booking-state-v2-
 
       - name: Book courts
         env:
@@ -53,4 +53,4 @@ jobs:
         if: always() && hashFiles('booking-state.json') != ''
         with:
           path: booking-state.json
-          key: booking-state-${{ github.run_id }}
+          key: booking-state-v2-${{ github.run_id }}

@@ -324,8 +324,6 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
     cands, booked = candidates(session, goal, state)
     if not cands:
         log(f"{name}: nothing bookable once logged in ({len(booked)} week(s) already booked)")
-    for wk in booked:
-        state[wk] = "already booked"
     for date, s in cands[:3]:
         try:
             result = book(session, user, date, s)
@@ -365,7 +363,8 @@ def main():
             continue
         # At release, retry for ~5 minutes in case the new day appears a little late.
         run_goal(goal, state, attempts=15 if at_release else 1)
-    save_state(state)
+    if LIVE:  # dry runs never record anything
+        save_state(state)
 
 
 if __name__ == "__main__":
