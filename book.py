@@ -215,26 +215,37 @@ class BookingError(Exception):
         return f"{self.args[0]} failed (HTTP {status}){': ' + str(msg)[:200] if msg else ''}"
 
 
+def empty_basket(session, uid, debug: str):
+    cart = api(session, "GET", CART, f"{debug}: load basket")
+    items = find_key(cart, "items", "cart_items") or []
+    ids = [i.get("id") for i in items if isinstance(i, dict) and i.get("id")] if isinstance(items, list) else []
+    if ids:
+        api(session, "POST", f"{CART}/remove", f"{debug}: remove {len(ids)} item(s)",
+            params={"membership_user_id": uid}, json={"cart_item_ids": ids})
+    return cart
+
+
 def book(session, user: dict, date: dt.date, s: dict) -> str:
     """Basket -> credit -> checkout. Returns a status line. In dry-run mode stops before paying."""
     uid = user.get("id")
     # Start from an empty basket so we only pay for this court.
-    api(session, "DELETE", CART, "empty basket", params={"selected_user_id": None})
+    empty_basket(session, uid, "before")
     api(session, "POST", f"{CART}/add", "add to basket",
         json={"items": [{"id": s["id"], "type": s.get("cart_type", "purchasableOccurrence"),
                          "pricing_option_id": s.get("pricing_option_id"), "apply_benefit": True,
                          "activity_restriction_ids": s.get("restriction_ids") or []}],
               "membership_user_id": uid, "selected_user_id": None})
-    cart = api(session, "GET", CART, "load basket", params={"selected_user_id": None})
+    cart = api(session, "GET", CART, "load basket")
     total = find_key(cart, "total", "total_price", "amount_due")
     total_raw = total.get("raw", total.get("value")) if isinstance(total, dict) else total
     item_hash = find_key(cart, "item_hash", "itemHash")
     checkout = api(session, "GET", f"{BASE}/api/checkout/", "load checkout")
     if not LIVE:
-        api(session, "DELETE", CART, "empty basket (dry run)", params={"selected_user_id": None})
-        credit = find_key(checkout, "credit", "credits", "available_credit", "credit_balance")
-        return (f"Dry run OK: basket total {total_raw!r}, credit info {'found' if credit else 'not found'}. "
-                "Nothing was paid.")
+        after = empty_basket(session, uid, "dry run cleanup")
+        balance = (user.get("credit") or {}).get("balance")
+        left = find_key(after, "items", "cart_items")
+        return (f"Dry run OK: basket total {total_raw!r}, your Better credit {balance!r}. "
+                f"Basket emptied again ({'empty' if not left else 'NOT empty - check it'}). Nothing was paid.")
     amount = total_raw if isinstance(total_raw, (int, float)) else float(str(total_raw).strip("£"))
     if amount:
         api(session, "POST", f"{BASE}/api/credits/apply", "apply credit",
