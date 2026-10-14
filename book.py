@@ -32,6 +32,8 @@ DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 CONFIG = json.loads(Path(os.environ.get("BOOKING_CONFIG", "bookings.json")).read_text())
 LIVE = CONFIG.get("live") is True
+FREE_CANCEL_HOURS = float(CONFIG.get("free_cancel_hours", 4))
+MIN_NOTICE_HOURS = max(float(CONFIG.get("min_hours_notice", 24)), FREE_CANCEL_HOURS + 1)
 STATE_FILE = Path(os.environ.get("BOOKING_STATE", "booking-state.json"))
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json",
            "Origin": "https://bookings.better.org.uk", "Referer": "https://bookings.better.org.uk/"}
@@ -135,8 +137,9 @@ def candidates(session, goal: dict, state: dict) -> tuple[list[tuple], set[str]]
                 booked_weeks.add(week_key(goal["name"], date))
             for s in matching(goal, day_slots):
                 start = s["starts_at"]["format_24_hour"]
-                if date == now.date() and minutes(start) <= now.hour * 60 + now.minute + 60:
-                    continue  # too soon to be useful
+                starts = dt.datetime.combine(date, dt.time(*map(int, start.split(":"))))
+                if starts - now < dt.timedelta(hours=MIN_NOTICE_HOURS):
+                    continue  # not enough time to cancel free if you can't play
                 price = (s.get("price") or {}).get("raw", 0) / 100
                 if (s.get("action_to_show") or {}).get("status") == "BOOK" and int(s.get("spaces", 0)) > 0 \
                         and price <= goal["max_price"]:
@@ -144,6 +147,11 @@ def candidates(session, goal: dict, state: dict) -> tuple[list[tuple], set[str]]
     found = [c for c in found if week_key(goal["name"], c[1]) not in booked_weeks]
     found.sort(key=lambda c: c[0])
     return [(date, s) for _, date, s in found], booked_weeks
+
+
+def cancel_by(date: dt.date, s: dict) -> dt.datetime:
+    start = dt.time(*map(int, s["starts_at"]["format_24_hour"].split(":")))
+    return dt.datetime.combine(date, start) - dt.timedelta(hours=FREE_CANCEL_HOURS)
 
 
 def describe(date: dt.date, s: dict) -> str:
@@ -339,7 +347,8 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
         if LIVE:
             state[week_key(name, date)] = "booked"
             notify(name, f"Booked {name.lower()}: {date:%a %d %b} {s['starts_at']['format_24_hour']}",
-                   f"{describe(date, s)}\nPaid from Better credit. Cancel in the Better app if you can't make it.",
+                   f"{describe(date, s)}\nPaid from Better credit. Can't make it? Cancel in the Better app by "
+                   f"{cancel_by(date, s):%a %d %b %H:%M} to get the credit back.",
                    priority="high")
         else:
             notify(name, f"Dry run: would book {name.lower()}", f"{describe(date, s)}\n{result}")

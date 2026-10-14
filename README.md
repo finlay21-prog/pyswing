@@ -45,6 +45,7 @@ to `VENUES` in `court_watch.py`.
 Monday or Tuesday (5:40–7pm, nearest venue first) and tennis on Saturday or Sunday (10am–12pm).
 It pays from **Better account credit only**, never a card, and it runs just after the 10pm
 release and then hourly to catch cancellations. If you already have a court that day, it skips that week.
+It only books courts starting at least 24 hours away (`min_hours_notice`). Better refunds to account credit if you cancel at least 4 hours before, so you always have time to cancel free. The booking message tells you the cancel-by time.
 
 - **Setup:** add repository secrets `BETTER_EMAIL` and `BETTER_PASSWORD`, then top up credit in your Better account.
 - **Dry run (the default):** while `"live": false`, run Actions → auto-book → Run workflow. It logs in,
