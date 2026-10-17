@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sat 17 Oct 22:27. Tap a time to book._
+_Updated Sat 17 Oct 23:26. Tap a time to book._
 
 ## Squash
 
@@ -53,6 +53,7 @@ _Updated Sat 17 Oct 22:27. Tap a time to book._
 ## Tennis
 
 **Sun 18 Oct**
+- Haggerston Park: [15:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-10-18/by-time)
 - Rosemary Gardens: [17:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-18/by-time) · [18:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-18/by-time)
 
 **Mon 19 Oct**
