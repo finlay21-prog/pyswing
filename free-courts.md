@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sun 18 Oct 00:24. Tap a time to book._
+_Updated Sun 18 Oct 01:41. Tap a time to book._
 
 ## Squash
 
