@@ -108,7 +108,6 @@
 "Squash|Britannia|2026-10-23|20:00|Squash 40min",
 "Squash|Britannia|2026-10-23|20:40|Squash 40min",
 "Squash|Britannia|2026-10-23|21:20|Squash 40min",
-"Squash|Clissold Leisure Centre|2026-10-18|10:20|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-18|13:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-18|13:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-18|14:20|Squash 40min",
@@ -216,7 +215,6 @@
 "Squash|Clissold Leisure Centre|2026-10-23|20:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-23|20:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-23|21:20|Squash 40min",
-"Squash|Finsbury|2026-10-18|09:20|Squash Court 40min",
 "Squash|Finsbury|2026-10-18|10:00|Squash Court 40min",
 "Squash|Finsbury|2026-10-18|10:40|Squash Court 40min",
 "Squash|Finsbury|2026-10-18|11:20|Squash Court 40min",
@@ -301,7 +299,6 @@
 "Squash|Finsbury|2026-10-23|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-10-23|20:40|Squash Court 40min",
 "Squash|Finsbury|2026-10-23|21:20|Squash Court 40min",
-"Squash|Ironmonger Row|2026-10-18|09:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-18|10:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-18|10:40|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-18|11:20|Squash Court 40min",
@@ -412,7 +409,6 @@
 "Squash|Ironmonger Row|2026-10-23|19:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-23|20:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-23|20:40|Squash Court 40min",
-"Squash|Sobell|2026-10-18|09:00|Squash Court 40min",
 "Squash|Sobell|2026-10-18|09:40|Squash Court 40min",
 "Squash|Sobell|2026-10-18|10:20|Squash Court 40min",
 "Squash|Sobell|2026-10-18|11:00|Squash Court 40min",
@@ -590,7 +586,7 @@
 "Tennis|Britannia (rooftop)|2026-10-23|19:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-23|20:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-23|21:00|Tennis Court - Outdoor",
-"Tennis|Haggerston Park|2026-10-18|13:00|Tennis Court - Outdoor",
+"Tennis|Haggerston Park|2026-10-18|14:00|Tennis Court - Outdoor",
 "Tennis|Haggerston Park|2026-10-23|21:00|Tennis Court - Outdoor",
 "Tennis|Rosemary Gardens|2026-10-18|17:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-10-18|18:00|Rosemary Gardens Tennis",
@@ -604,10 +600,8 @@
 "Tennis|Rosemary Gardens|2026-10-21|15:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-10-21|16:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-10-21|17:00|Rosemary Gardens Tennis",
-"Tennis|Rosemary Gardens|2026-10-22|08:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-10-22|14:00|Rosemary Gardens Tennis",
-"Tennis|Rosemary Gardens|2026-10-22|15:00|Rosemary Gardens Tennis",
-"Tennis|Rosemary Gardens|2026-10-23|15:00|Rosemary Gardens Tennis"
+"Tennis|Rosemary Gardens|2026-10-22|15:00|Rosemary Gardens Tennis"
 ],
 "reminders": [
 "Tennis|2026-W42"
