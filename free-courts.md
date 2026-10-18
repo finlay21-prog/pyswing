@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sun 18 Oct 17:29. Tap a time to book._
+_Updated Sun 18 Oct 18:27. Tap a time to book._
 
 ## Squash
 
@@ -40,6 +40,7 @@ _Updated Sun 18 Oct 17:29. Tap a time to book._
 
 - _Britannia: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-18/by-time)_
 - _Ironmonger Row: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-18/by-time)_
+- _Finsbury: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-18/by-time)_
 - _Clissold Leisure Centre: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-10-18/by-time)_
 - _Sobell: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-18/by-time)_
 
@@ -63,6 +64,9 @@ _Updated Sun 18 Oct 17:29. Tap a time to book._
 **Fri 23 Oct**
 - Haggerston Park: [21:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-10-23/by-time)
 - Britannia (rooftop): [07:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [09:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [10:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [11:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [12:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [13:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [14:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [15:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [16:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [20:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time) · [21:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-23/by-time)
+
+- _Haggerston Park: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-10-18/by-time)_
+- _Rosemary Gardens: nothing listed online Sun 18 Oct, [check manually](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-18/by-time)_
 
 ## Check these yourself
 - [Bethnal Green Gardens](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/2026-10-18) (tennis, Tower Hamlets)
