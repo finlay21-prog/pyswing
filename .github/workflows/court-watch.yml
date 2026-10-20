@@ -37,6 +37,8 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
           NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
+          # Public channel friends can subscribe to: court alerts only (court availability is public anyway).
+          NTFY_TOPIC_SHARED: ${{ github.repository == 'finlay21-prog/pyswing' && 'e2-courts-df3oa5' || '' }}
           STATE_FILE: seen_slots.json
           SUMMARY_FILE: free-courts.md
           # ClubSpark's firewall blocks GitHub's servers; those venues run on the phone (phone/).

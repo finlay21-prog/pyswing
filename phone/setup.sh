@@ -3,8 +3,9 @@
 set -e
 
 TOPIC="$1"
+REPO="${2:-https://github.com/finlay21-prog/pyswing}"  # a friend's own copy can pass its URL here
 if [ -z "$TOPIC" ]; then
-  echo "Usage: bash pyswing/phone/setup.sh <your-ntfy-topic>"
+  echo "Usage: bash pyswing/phone/setup.sh <your-ntfy-topic> [your-repo-url]"
   exit 1
 fi
 
@@ -13,7 +14,7 @@ pkg install -y python git termux-api
 command -v pip >/dev/null || pkg install -y python-pip
 pip install -q requests
 
-[ -d "$HOME/pyswing" ] || git clone -q https://github.com/finlay21-prog/pyswing "$HOME/pyswing"
+[ -d "$HOME/pyswing" ] || git clone -q "$REPO" "$HOME/pyswing"
 chmod +x "$HOME/pyswing/phone/run.sh"
 echo "NTFY_TOPIC=$TOPIC" > "$HOME/.pyswing.env"
 

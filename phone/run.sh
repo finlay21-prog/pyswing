@@ -6,7 +6,7 @@ cd "$HOME/pyswing" || exit 1
 git pull -q --ff-only 2>/dev/null  # pick up code changes pushed to GitHub
 
 set -a
-. "$HOME/.pyswing.env"  # NTFY_TOPIC=...
+. "$HOME/.pyswing.env"  # NTFY_TOPIC=..., optionally NTFY_TOPIC_SHARED=...
 set +a
 
 PLATFORMS=clubspark \

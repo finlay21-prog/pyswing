@@ -301,6 +301,10 @@ def main():
                 by_topic.setdefault(topics[sport], {})[sport] = lines
         for topic, by_sport in by_topic.items():
             notify(topic, by_sport)
+        # Shared channel for friends: the same court alerts, none of the booking messages.
+        shared = os.environ.get("NTFY_TOPIC_SHARED")
+        if shared and new and shared not in by_topic:
+            notify(shared, new)
         if "better" in ENABLED:  # the GitHub run, so it's sent once rather than by the phone too
             weekend_reminder(reminders)
         cutoff = f"Tennis|{dt.date.today() - dt.timedelta(days=60):%G-W%V}"

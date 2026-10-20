@@ -4,6 +4,8 @@ Polls east London tennis and squash court booking sites and sends ntfy alerts fo
 
 Based on [danol0/pyswing](https://github.com/danol0/pyswing), with squash added.
 
+**Sharing with friends:** see [FRIENDS.md](FRIENDS.md).
+
 ## What it watches
 
 | Sport  | Venue                   | Booking system | Checked from   |

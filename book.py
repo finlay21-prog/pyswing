@@ -199,7 +199,7 @@ def find_key(obj, *names):
 def login(session) -> dict:
     email, password = os.environ.get("BETTER_EMAIL"), os.environ.get("BETTER_PASSWORD")
     if not email or not password:
-        raise SystemExit("BETTER_EMAIL / BETTER_PASSWORD secrets aren't set")
+        raise LoginError("BETTER_EMAIL / BETTER_PASSWORD secrets aren't set")
     r = session.post(f"{BASE}/api/v1/auth/login", timeout=20,
                      headers={"Client-Domain-Identifier": CLIENT_DOMAIN},  # only the login call sends this
                      json={"data": {"user_type": "customer", "username_or_email": email, "password": password}})
@@ -438,6 +438,9 @@ def apply_skips(state: dict):
 
 def main():
     only = set(sys.argv[1:])
+    if not (os.environ.get("BETTER_EMAIL") and os.environ.get("BETTER_PASSWORD")):
+        log("auto-booking is off: add BETTER_EMAIL and BETTER_PASSWORD secrets to turn it on")
+        return
     if not LIVE and os.environ.get("GITHUB_EVENT_NAME") == "schedule":
         log("dry-run mode: scheduled runs do nothing until bookings.json has \"live\": true")
         return
