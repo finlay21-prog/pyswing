@@ -10,7 +10,6 @@
 "Tennis|Rosemary Gardens"
 ],
 "slots": [
-"Squash|Britannia|2026-10-21|20:40|Squash 40min",
 "Squash|Britannia|2026-10-21|21:20|Squash 40min",
 "Squash|Britannia|2026-10-22|06:00|Squash 40min",
 "Squash|Britannia|2026-10-22|06:40|Squash 40min",
@@ -339,8 +338,6 @@
 "Squash|Ironmonger Row|2026-10-26|19:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-26|20:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-26|20:40|Squash Court 40min",
-"Squash|Sobell|2026-10-21|17:40|Squash Court 40min",
-"Squash|Sobell|2026-10-21|18:20|Squash Court 40min",
 "Squash|Sobell|2026-10-21|19:00|Squash Court 40min",
 "Squash|Sobell|2026-10-21|19:40|Squash Court 40min",
 "Squash|Sobell|2026-10-21|20:20|Squash Court 40min",
@@ -437,7 +434,6 @@
 "Squash|Sobell|2026-10-26|19:40|Squash Court 40min",
 "Squash|Sobell|2026-10-26|20:20|Squash Court 40min",
 "Squash|Sobell|2026-10-26|21:00|Squash Court 40min",
-"Tennis|Britannia (rooftop)|2026-10-21|18:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-21|19:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-21|20:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-21|21:00|Tennis Court - Outdoor",
@@ -446,7 +442,6 @@
 "Tennis|Britannia (rooftop)|2026-10-22|10:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-22|11:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-22|12:00|Tennis Court - Outdoor",
-"Tennis|Britannia (rooftop)|2026-10-22|13:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-22|14:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-22|15:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-22|16:00|Tennis Court - Outdoor",
