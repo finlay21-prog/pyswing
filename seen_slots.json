@@ -12,7 +12,6 @@
 "slots": [
 "Squash|Britannia|2026-10-25|08:00|Squash 40min",
 "Squash|Britannia|2026-10-25|08:40|Squash 40min",
-"Squash|Britannia|2026-10-25|10:40|Squash 40min",
 "Squash|Britannia|2026-10-25|14:00|Squash 40min",
 "Squash|Britannia|2026-10-25|14:40|Squash 40min",
 "Squash|Britannia|2026-10-25|15:20|Squash 40min",
@@ -562,6 +561,8 @@
 "Squash|Sobell|2026-10-30|21:00|Squash Court 40min",
 "Tennis|Britannia (rooftop)|2026-10-25|08:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-25|09:00|Tennis Court - Outdoor",
+"Tennis|Britannia (rooftop)|2026-10-25|10:00|Tennis Court - Outdoor",
+"Tennis|Britannia (rooftop)|2026-10-25|11:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-26|07:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-26|08:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-26|09:00|Tennis Court - Outdoor",
