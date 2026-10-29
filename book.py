@@ -31,7 +31,8 @@ RELEASE_TIME = dt.time(22, 0)  # Better releases new days at 10pm
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 CONFIG = json.loads(Path(os.environ.get("BOOKING_CONFIG", "bookings.json")).read_text())
-LIVE = CONFIG.get("live") is True
+# DRY_RUN=1 (the "dry run" box on the manual Run workflow button) tests without paying.
+LIVE = CONFIG.get("live") is True and os.environ.get("DRY_RUN", "").lower() not in ("1", "true", "yes")
 FREE_CANCEL_HOURS = float(CONFIG.get("free_cancel_hours", 4))
 MIN_NOTICE_HOURS = max(float(CONFIG.get("min_hours_notice", 24)), FREE_CANCEL_HOURS + 1)
 STATE_FILE = Path(os.environ.get("BOOKING_STATE", "booking-state.json"))
@@ -85,8 +86,10 @@ def load_state() -> dict:
 
 def save_state(state: dict):
     cutoff = (dt.date.today() - dt.timedelta(days=21)).isocalendar()
+    week_ago = (dt.date.today() - dt.timedelta(days=7)).isoformat()
     keep = {k: v for k, v in state.items()
-            if not k.startswith("week:") or tuple(map(int, k.split(":")[2].split("-W"))) >= cutoff[:2]}
+            if (not k.startswith("week:") or tuple(map(int, k.split(":")[2].split("-W"))) >= cutoff[:2])
+            and (not k.startswith("error:") or k.split(":")[2] >= week_ago)}
     STATE_FILE.write_text(json.dumps(keep, indent=1))
 
 
@@ -267,6 +270,18 @@ def remove_items(session, uid, ids: list, debug: str):
             params={k: v for k, v in {"membership_user_id": uid}.items() if v}, json={"cart_item_ids": ids})
 
 
+def basket_terms(session, cart_id) -> list:
+    """IDs of the terms and conditions for this basket; ticking 'I agree' at checkout sends these."""
+    if not cart_id:
+        raise BookingError("load terms", 0, {"message": "basket id missing"})
+    body = api(session, "GET", f"{BASE}/api/terms", "load terms", params={"cart_id": cart_id})
+    data = body.get("data") or []
+    ids = [t.get("id") for t in data if isinstance(t, dict) and t.get("id") is not None]
+    if not ids:
+        raise BookingError("load terms", 0, {"message": "no terms returned for the basket"})
+    return ids
+
+
 def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str, list]:
     """Put the court in your Better basket. If your Better credit covers the whole basket, pay with it;
     otherwise leave it there for you to pay by card in the app. Returns (outcome, detail) where outcome
@@ -282,6 +297,7 @@ def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str, list]:
                              "activity_restriction_ids": s.get("restriction_ids") or []}],
                   "membership_user_id": uid, "selected_user_id": None})
         cart = api(session, "GET", CART, "load basket").get("data") or {}
+        terms = basket_terms(session, cart.get("id"))
         added = [i["id"] for i in basket_items(cart) if i["id"] not in before]
         if not added:
             raise BookingError("add to basket", 0, {"message": "court didn't appear in the basket"})
@@ -292,7 +308,10 @@ def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str, list]:
         available = float(general.get("total_available") or 0)
         can_pay = not before and available >= amount  # only pay if the basket is just this court
         if not LIVE:
-            return "dry run", added, (f"Basket total {cart.get('formattedTotal', amount)}, Better credit {available:g}. "
+            balance = (user.get("credit") or {}).get("balance")
+            return "dry run", added, (f"Terms to accept: {len(terms)}. "
+                               f"Credit held elsewhere: {'yes - check your account' if balance not in (None, available) else 'none'}. "
+                               f"Basket total {cart.get('formattedTotal', amount)}, Better credit {available:g}. "
                                f"When live it would {'pay from credit' if can_pay else 'leave it in your basket for you to pay'}. "
                                "Removed from your basket again; nothing was paid.")
         if not can_pay:
@@ -305,7 +324,7 @@ def book(session, user: dict, date: dt.date, s: dict) -> tuple[str, str, list]:
         done = api(session, "POST", f"{BASE}/api/checkout/complete", "complete checkout",
                    json={"completed_waivers": [],
                          "payments": [{"tender_type": "credit", "amount": amount}] if amount else [],
-                         "selected_user_id": None, "source": SOURCE, "terms": [],
+                         "selected_user_id": None, "source": SOURCE, "terms": terms,
                          "item_hash": cart.get("itemHash")})
         keep = True
         return "paid", added, f"Paid from Better credit (order {find_key(done, 'complete_order_id', 'completeOrderId', 'order_id') or 'confirmed'})."
@@ -388,7 +407,10 @@ def run_goal(goal: dict, state: dict, attempts: int) -> None:
         else:
             notify(sport, f"Dry run: would get {sport.lower()} {when}", f"{describe(date, s)}\n{detail}")
         return
-    notify(sport, f"Court booker couldn't get {sport.lower()}", f"Tried {describe(*cands[0])}\n{last_error}")
+    err_key = f"error:{name}:{dt.date.today()}:{last_error[:80]}"
+    if err_key not in state:  # tell you once a day per problem, not every hour
+        state[err_key] = "notified"
+        notify(sport, f"Court booker couldn't get {sport.lower()}", f"Tried {describe(*cands[0])}\n{last_error}")
 
 
 def apply_skips(state: dict):

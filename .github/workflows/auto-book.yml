@@ -8,7 +8,12 @@ on:
     # book.py then waits until 22:00 and retries for a few minutes.
     - cron: "38 20 * * *"
     - cron: "38 21 * * *"
-  workflow_dispatch:  # "Run workflow" button, used for dry runs
+  workflow_dispatch:  # "Run workflow" button
+    inputs:
+      dry_run:
+        description: "Dry run: fill and empty the basket, don't pay"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -46,6 +51,7 @@ jobs:
           NTFY_TOPIC_SQUASH: ${{ secrets.NTFY_TOPIC_SQUASH }}
           NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
           BOOKING_STATE: booking-state.json
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
           TZ: Europe/London
         run: python book.py
 

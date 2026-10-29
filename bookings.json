@@ -39,9 +39,9 @@
     {
       "name": "Tennis",
       "days": ["Sat", "Sun"],
-      "earliest_start": "10:00",
-      "latest_start": "12:00",
-      "preferred_start": "11:00",
+      "earliest_start": "08:00",
+      "latest_start": "11:00",
+      "preferred_start": "10:00",
       "max_price": 15.0,
       "venues_nearest_first": [
         ["hackney-parks", "tennis-court-outdoor"],
