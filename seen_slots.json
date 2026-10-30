@@ -30,7 +30,6 @@
 "Squash|Britannia|2026-11-01|08:00|Squash 40min",
 "Squash|Britannia|2026-11-01|08:40|Squash 40min",
 "Squash|Britannia|2026-11-01|09:20|Squash 40min",
-"Squash|Britannia|2026-11-01|12:00|Squash 40min",
 "Squash|Britannia|2026-11-01|12:40|Squash 40min",
 "Squash|Britannia|2026-11-01|13:20|Squash 40min",
 "Squash|Britannia|2026-11-01|14:00|Squash 40min",
@@ -102,7 +101,6 @@
 "Squash|Britannia|2026-11-04|17:20|Squash 40min",
 "Squash|Britannia|2026-11-04|20:40|Squash 40min",
 "Squash|Britannia|2026-11-04|21:20|Squash 40min",
-"Squash|Clissold Leisure Centre|2026-10-30|17:20|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|20:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|20:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|21:20|Squash 40min",
@@ -149,7 +147,6 @@
 "Squash|Clissold Leisure Centre|2026-11-03|08:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-03|08:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-03|09:20|Squash 40min",
-"Squash|Clissold Leisure Centre|2026-11-03|10:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-03|10:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-03|11:20|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-03|12:00|Squash 40min",
@@ -183,7 +180,6 @@
 "Squash|Clissold Leisure Centre|2026-11-04|20:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-04|20:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-04|21:20|Squash 40min",
-"Squash|Finsbury|2026-10-30|17:20|Squash Court 40min",
 "Squash|Finsbury|2026-10-30|18:00|Squash Court 40min",
 "Squash|Finsbury|2026-10-30|18:40|Squash Court 40min",
 "Squash|Finsbury|2026-10-30|19:20|Squash Court 40min",
@@ -261,7 +257,6 @@
 "Squash|Finsbury|2026-11-04|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-11-04|20:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-04|21:20|Squash Court 40min",
-"Squash|Ironmonger Row|2026-10-30|17:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|18:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|18:40|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|19:20|Squash Court 40min",
@@ -349,7 +344,6 @@
 "Squash|Ironmonger Row|2026-11-04|19:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-04|20:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-04|20:40|Squash Court 40min",
-"Squash|Sobell|2026-10-30|17:00|Squash Court 40min",
 "Squash|Sobell|2026-10-30|19:40|Squash Court 40min",
 "Squash|Sobell|2026-10-30|20:20|Squash Court 40min",
 "Squash|Sobell|2026-10-30|21:00|Squash Court 40min",
@@ -473,7 +467,6 @@
 "Tennis|Britannia (rooftop)|2026-11-03|13:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-03|14:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-03|15:00|Tennis Court - Outdoor",
-"Tennis|Britannia (rooftop)|2026-11-03|16:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-03|21:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|07:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|08:00|Tennis Court - Outdoor",
@@ -486,7 +479,6 @@
 "Tennis|Britannia (rooftop)|2026-11-04|15:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|16:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|17:00|Tennis Court - Outdoor",
-"Tennis|Britannia (rooftop)|2026-11-04|19:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|20:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-04|21:00|Tennis Court - Outdoor",
 "Tennis|Haggerston Park|2026-10-30|18:00|Tennis Court - Outdoor",
@@ -505,6 +497,7 @@
 ],
 "reminders": [
 "Tennis|2026-W42",
-"Tennis|2026-W43"
+"Tennis|2026-W43",
+"Tennis|2026-W44"
 ]
 }
