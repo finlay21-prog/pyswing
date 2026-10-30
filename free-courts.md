@@ -1,14 +1,14 @@
 # Free courts
-_Updated Fri 30 Oct 18:45. Tap a time to book._
+_Updated Fri 30 Oct 19:46. Tap a time to book._
 
 ## Squash
 
 **Fri 30 Oct**
-- Britannia: [19:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time) · [20:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time) · [21:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time)
-- Ironmonger Row: [19:20](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-30/by-time) · [20:00](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-30/by-time)
-- Finsbury: [19:20](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time) · [20:00](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time) · [21:20](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time)
+- Britannia: [20:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time) · [21:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-30/by-time)
+- Ironmonger Row: [20:00](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-10-30/by-time)
+- Finsbury: [20:00](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time) · [21:20](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-10-30/by-time)
 - Clissold Leisure Centre: [20:00](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-10-30/by-time) · [20:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-10-30/by-time) · [21:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-10-30/by-time)
-- Sobell: [19:40](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-30/by-time) · [20:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-30/by-time) · [21:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-30/by-time)
+- Sobell: [20:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-30/by-time) · [21:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-10-30/by-time)
 
 **Sat 31 Oct**
 - Britannia: [08:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [08:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [12:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [13:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [14:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [14:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [15:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [16:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [16:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [17:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [18:40](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time) · [19:20](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-10-31/by-time)
@@ -54,6 +54,7 @@ _Updated Fri 30 Oct 18:45. Tap a time to book._
 - Britannia (rooftop): [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-31/by-time) · [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-31/by-time)
 
 **Sun 01 Nov**
+- Haggerston Park: [10:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-01/by-time)
 - Britannia (rooftop): [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-01/by-time)
 
 **Mon 02 Nov**
