@@ -12,6 +12,7 @@
 "slots": [
 "Squash|Britannia|2026-10-31|08:00|Squash 40min",
 "Squash|Britannia|2026-10-31|08:40|Squash 40min",
+"Squash|Britannia|2026-10-31|11:20|Squash 40min",
 "Squash|Britannia|2026-10-31|12:40|Squash 40min",
 "Squash|Britannia|2026-10-31|13:20|Squash 40min",
 "Squash|Britannia|2026-10-31|14:00|Squash 40min",
@@ -297,7 +298,6 @@
 "Squash|Finsbury|2026-11-05|16:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-05|17:20|Squash Court 40min",
 "Squash|Finsbury|2026-11-05|18:00|Squash Court 40min",
-"Squash|Finsbury|2026-11-05|18:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-05|19:20|Squash Court 40min",
 "Squash|Finsbury|2026-11-05|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-11-05|20:40|Squash Court 40min",
@@ -520,7 +520,6 @@
 "Squash|Sobell|2026-11-05|19:40|Squash Court 40min",
 "Squash|Sobell|2026-11-05|20:20|Squash Court 40min",
 "Squash|Sobell|2026-11-05|21:00|Squash Court 40min",
-"Tennis|Britannia (rooftop)|2026-10-31|18:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-10-31|19:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-01|18:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-02|07:00|Tennis Court - Outdoor",
