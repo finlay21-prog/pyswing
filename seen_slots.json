@@ -10,8 +10,6 @@
 "Tennis|Rosemary Gardens"
 ],
 "slots": [
-"Squash|Britannia|2026-10-30|06:00|Squash 40min",
-"Squash|Britannia|2026-10-30|06:40|Squash 40min",
 "Squash|Britannia|2026-10-30|08:40|Squash 40min",
 "Squash|Britannia|2026-10-30|09:20|Squash 40min",
 "Squash|Britannia|2026-10-30|10:00|Squash 40min",
@@ -48,7 +46,6 @@
 "Squash|Britannia|2026-11-01|08:00|Squash 40min",
 "Squash|Britannia|2026-11-01|08:40|Squash 40min",
 "Squash|Britannia|2026-11-01|09:20|Squash 40min",
-"Squash|Britannia|2026-11-01|10:40|Squash 40min",
 "Squash|Britannia|2026-11-01|12:00|Squash 40min",
 "Squash|Britannia|2026-11-01|12:40|Squash 40min",
 "Squash|Britannia|2026-11-01|13:20|Squash 40min",
@@ -119,8 +116,6 @@
 "Squash|Britannia|2026-11-04|17:20|Squash 40min",
 "Squash|Britannia|2026-11-04|20:40|Squash 40min",
 "Squash|Britannia|2026-11-04|21:20|Squash 40min",
-"Squash|Clissold Leisure Centre|2026-10-30|06:00|Squash 40min",
-"Squash|Clissold Leisure Centre|2026-10-30|06:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|07:20|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|11:20|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-10-30|12:00|Squash 40min",
@@ -302,7 +297,6 @@
 "Squash|Finsbury|2026-11-04|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-11-04|20:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-04|21:20|Squash Court 40min",
-"Squash|Ironmonger Row|2026-10-30|06:40|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|07:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|08:40|Squash Court 40min",
 "Squash|Ironmonger Row|2026-10-30|09:20|Squash Court 40min",
