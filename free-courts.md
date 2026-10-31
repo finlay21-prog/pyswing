@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sat 31 Oct 00:56. Tap a time to book._
+_Updated Sat 31 Oct 01:56. Tap a time to book._
 
 ## Squash
 
@@ -49,7 +49,7 @@ _Updated Sat 31 Oct 00:56. Tap a time to book._
 
 **Sat 31 Oct**
 - Britannia (rooftop): [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-10-31/by-time)
-- Rosemary Gardens: [17:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-31/by-time)
+- Rosemary Gardens: [08:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-31/by-time) · [17:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-10-31/by-time)
 
 **Sun 01 Nov**
 - Britannia (rooftop): [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-01/by-time)
