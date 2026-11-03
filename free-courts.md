@@ -1,5 +1,5 @@
 # Free courts
-_Updated Mon 02 Nov 23:38. Tap a time to book._
+_Updated Tue 03 Nov 00:58. Tap a time to book._
 
 ## Squash
 
@@ -45,12 +45,6 @@ _Updated Mon 02 Nov 23:38. Tap a time to book._
 - Clissold Leisure Centre: [07:00](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [07:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [08:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [09:00](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [09:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [10:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [11:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [12:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [13:00](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [13:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [14:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [15:00](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [15:40](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time) · [16:20](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-08/by-time)
 - Sobell: [08:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [09:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [09:40](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [10:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [11:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [11:40](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [12:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [13:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [13:40](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [14:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [15:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [15:40](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [16:20](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time) · [17:00](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-08/by-time)
 
-- _Britannia: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/britannia-leisure-centre/squash-40min/2026-11-02/by-time)_
-- _Ironmonger Row: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/ironmonger-row-baths/squash-40min/2026-11-02/by-time)_
-- _Finsbury: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/finsbury-leisure-centre/squash-40min/2026-11-02/by-time)_
-- _Clissold Leisure Centre: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/clissold-leisure-centre/squash-40min/2026-11-02/by-time)_
-- _Sobell: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/sobell-leisure-centre/squash-40min/2026-11-02/by-time)_
-
 ## Tennis
 
 **Tue 03 Nov**
@@ -74,14 +68,10 @@ _Updated Mon 02 Nov 23:38. Tap a time to book._
 **Sun 08 Nov**
 - Britannia (rooftop): [08:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [09:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [10:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [12:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [13:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [14:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [15:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [16:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [17:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time) · [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-08/by-time)
 
-- _Haggerston Park: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-02/by-time)_
-- _Britannia (rooftop): nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-02/by-time)_
-- _Rosemary Gardens: nothing listed online Mon 02 Nov, [check manually](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-02/by-time)_
-
 ## Check these yourself
-- [Bethnal Green Gardens](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/2026-11-02) (tennis, Tower Hamlets)
-- [Victoria Park](https://tennistowerhamlets.com/book/courts/victoria-park/2026-11-02) (tennis, Tower Hamlets)
-- [Joe White Gardens](https://clubspark.lta.org.uk/AskeGardens/Booking/BookByDate#?date=2026-11-02&role=guest) (tennis)
-- [London Fields](https://clubspark.lta.org.uk/LondonFieldsPark/Booking/BookByDate#?date=2026-11-02&role=guest) (tennis)
-- [Hackney Downs](https://clubspark.lta.org.uk/HackneyDowns/Booking/BookByDate#?date=2026-11-02&role=guest) (tennis)
-- [Clissold Park](https://clubspark.lta.org.uk/ClissoldParkHackney/Booking/BookByDate#?date=2026-11-02&role=guest) (tennis)
+- [Bethnal Green Gardens](https://tennistowerhamlets.com/book/courts/bethnal-green-gardens/2026-11-03) (tennis, Tower Hamlets)
+- [Victoria Park](https://tennistowerhamlets.com/book/courts/victoria-park/2026-11-03) (tennis, Tower Hamlets)
+- [Joe White Gardens](https://clubspark.lta.org.uk/AskeGardens/Booking/BookByDate#?date=2026-11-03&role=guest) (tennis)
+- [London Fields](https://clubspark.lta.org.uk/LondonFieldsPark/Booking/BookByDate#?date=2026-11-03&role=guest) (tennis)
+- [Hackney Downs](https://clubspark.lta.org.uk/HackneyDowns/Booking/BookByDate#?date=2026-11-03&role=guest) (tennis)
+- [Clissold Park](https://clubspark.lta.org.uk/ClissoldParkHackney/Booking/BookByDate#?date=2026-11-03&role=guest) (tennis)
