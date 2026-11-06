@@ -178,7 +178,6 @@
 "Squash|Clissold Leisure Centre|2026-11-11|20:00|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-11|20:40|Squash 40min",
 "Squash|Clissold Leisure Centre|2026-11-11|21:20|Squash 40min",
-"Squash|Finsbury|2026-11-06|17:20|Squash Court 40min",
 "Squash|Finsbury|2026-11-06|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-11-06|20:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-06|21:20|Squash Court 40min",
@@ -252,7 +251,6 @@
 "Squash|Finsbury|2026-11-11|20:00|Squash Court 40min",
 "Squash|Finsbury|2026-11-11|20:40|Squash Court 40min",
 "Squash|Finsbury|2026-11-11|21:20|Squash Court 40min",
-"Squash|Ironmonger Row|2026-11-06|17:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-06|18:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-06|18:40|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-06|19:20|Squash Court 40min",
@@ -343,8 +341,6 @@
 "Squash|Ironmonger Row|2026-11-11|19:20|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-11|20:00|Squash Court 40min",
 "Squash|Ironmonger Row|2026-11-11|20:40|Squash Court 40min",
-"Squash|Sobell|2026-11-06|17:00|Squash Court 40min",
-"Squash|Sobell|2026-11-06|17:40|Squash Court 40min",
 "Squash|Sobell|2026-11-06|18:20|Squash Court 40min",
 "Squash|Sobell|2026-11-06|19:00|Squash Court 40min",
 "Squash|Sobell|2026-11-06|19:40|Squash Court 40min",
@@ -491,8 +487,8 @@
 "Tennis|Britannia (rooftop)|2026-11-11|20:00|Tennis Court - Outdoor",
 "Tennis|Britannia (rooftop)|2026-11-11|21:00|Tennis Court - Outdoor",
 "Tennis|Haggerston Park|2026-11-06|21:00|Tennis Court - Outdoor",
-"Tennis|Haggerston Park|2026-11-07|12:00|Tennis Court - Outdoor",
-"Tennis|Haggerston Park|2026-11-07|15:00|Tennis Court - Outdoor",
+"Tennis|Haggerston Park|2026-11-07|13:00|Tennis Court - Outdoor",
+"Tennis|Haggerston Park|2026-11-07|14:00|Tennis Court - Outdoor",
 "Tennis|Rosemary Gardens|2026-11-06|20:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-11-09|14:00|Rosemary Gardens Tennis",
 "Tennis|Rosemary Gardens|2026-11-09|15:00|Rosemary Gardens Tennis",
@@ -509,6 +505,7 @@
 "reminders": [
 "Tennis|2026-W42",
 "Tennis|2026-W43",
-"Tennis|2026-W44"
+"Tennis|2026-W44",
+"Tennis|2026-W45"
 ]
 }
