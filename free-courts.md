@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sat 07 Nov 19:41. Tap a time to book._
+_Updated Sat 07 Nov 20:37. Tap a time to book._
 
 ## Squash
 
@@ -47,7 +47,7 @@ _Updated Sat 07 Nov 19:41. Tap a time to book._
 ## Tennis
 
 **Sun 08 Nov**
-- Rosemary Gardens: [12:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-08/by-time) · [13:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-08/by-time) · [18:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-08/by-time)
+- Rosemary Gardens: [18:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-08/by-time)
 
 **Mon 09 Nov**
 - Britannia (rooftop): [07:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [08:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [09:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [10:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [11:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [12:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [13:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [14:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [15:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [16:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [17:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [20:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time) · [21:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-09/by-time)
