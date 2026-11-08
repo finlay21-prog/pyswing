@@ -1,5 +1,5 @@
 # Free courts
-_Updated Sun 08 Nov 05:49. Tap a time to book._
+_Updated Sun 08 Nov 06:56. Tap a time to book._
 
 ## Squash
 
@@ -48,7 +48,7 @@ _Updated Sun 08 Nov 05:49. Tap a time to book._
 ## Tennis
 
 **Sun 08 Nov**
-- Haggerston Park: [11:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time) · [17:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time) · [18:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time)
+- Haggerston Park: [11:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time) · [15:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time) · [17:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time) · [18:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-08/by-time)
 - Rosemary Gardens: [18:00](https://bookings.better.org.uk/location/islington-tennis-centre/rosemary-gardens-tennis/2026-11-08/by-time)
 
 **Mon 09 Nov**
