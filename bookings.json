@@ -12,11 +12,7 @@
       "preferred_start": "18:20",
       "max_price": 20.0,
       "venues_nearest_first": [
-        ["britannia-leisure-centre", "squash-40min"],
-        ["ironmonger-row-baths", "squash-40min"],
-        ["finsbury-leisure-centre", "squash-40min"],
-        ["clissold-leisure-centre", "squash-40min"],
-        ["sobell-leisure-centre", "squash-40min"]
+        ["britannia-leisure-centre", "squash-40min"]
       ],
       "sport": "Squash"
     },
@@ -29,11 +25,7 @@
       "preferred_start": "15:00",
       "max_price": 20.0,
       "venues_nearest_first": [
-        ["britannia-leisure-centre", "squash-40min"],
-        ["ironmonger-row-baths", "squash-40min"],
-        ["finsbury-leisure-centre", "squash-40min"],
-        ["clissold-leisure-centre", "squash-40min"],
-        ["sobell-leisure-centre", "squash-40min"]
+        ["britannia-leisure-centre", "squash-40min"]
       ]
     },
     {
