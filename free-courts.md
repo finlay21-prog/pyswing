@@ -1,5 +1,5 @@
 # Free courts
-_Updated Thu 12 Nov 01:08. Tap a time to book._
+_Updated Thu 12 Nov 02:51. Tap a time to book._
 
 ## Squash
 
@@ -58,7 +58,6 @@ _Updated Thu 12 Nov 01:08. Tap a time to book._
 - Britannia (rooftop): [08:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-14/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-14/by-time) · [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-14/by-time)
 
 **Sun 15 Nov**
-- Haggerston Park: [12:00](https://bookings.better.org.uk/location/hackney-parks/tennis-court-outdoor/2026-11-15/by-time)
 - Britannia (rooftop): [08:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-15/by-time) · [09:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-15/by-time) · [13:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-15/by-time) · [18:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-15/by-time) · [19:00](https://bookings.better.org.uk/location/britannia-leisure-centre/tennis-court-outdoor/2026-11-15/by-time)
 
 **Mon 16 Nov**
