@@ -146,6 +146,8 @@ def candidates(session, goal: dict, state: dict) -> tuple[list[tuple], set[str]]
             date = now.date() + dt.timedelta(days=i)
             if DAYS[date.weekday()] not in goal["days"] or week_taken(state, week_key(goal["name"], date)):
                 continue
+            if goal.get("only_date") and date.isoformat() != goal["only_date"]:
+                continue  # one-off goal for a single date
             try:
                 day_slots = get_slots(session, venue, activity, date)
             except requests.RequestException as e:

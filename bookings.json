@@ -41,6 +41,19 @@
         ["islington-tennis-centre", "rosemary-gardens-tennis"]
       ],
       "sport": "Tennis"
+    },
+    {
+      "name": "Squash Sun 22 Nov",
+      "sport": "Squash",
+      "days": ["Sun"],
+      "only_date": "2026-11-22",
+      "earliest_start": "12:00",
+      "latest_start": "13:20",
+      "preferred_start": "12:40",
+      "max_price": 20.0,
+      "venues_nearest_first": [
+        ["britannia-leisure-centre", "squash-40min"]
+      ]
     }
   ]
 }
