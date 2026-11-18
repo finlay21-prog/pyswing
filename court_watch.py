@@ -216,7 +216,11 @@ PAGE_CSS = """
 main{max-width:640px;margin:0 auto;padding:20px 16px 48px}h1{font-size:1.5rem;margin:0 0 2px}
 .sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
 nav{display:flex;gap:8px;margin:0 0 18px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:1}
-nav a{flex:1;text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600;background:var(--card)}
+nav button{flex:1;padding:8px 4px;border:1px solid var(--line);border-radius:10px;color:var(--ink);font:600 .95rem system-ui,sans-serif;background:var(--card);cursor:pointer}
+nav button.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.booked{background:#f6d365;color:#4a3500;border-radius:8px;padding:3px 8px;font-size:.9rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-color-scheme:dark){.booked{background:#e0b84a;color:#2a1f00}}
+[hidden]{display:none!important}
 h2{font-size:1.15rem;margin:26px 0 4px}.win{color:var(--muted);font-size:.85rem;margin:0 0 10px}
 .day{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px}
 .day h3{font-size:.95rem;margin:0 0 6px}.row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--line)}
@@ -314,8 +318,29 @@ def booking_rows(bookings: list[dict]) -> list[str]:
     return rows
 
 
+PAGE_JS = """
+(function(){
+  var KEY='courts-filter', btns=document.querySelectorAll('nav button'), secs=document.querySelectorAll('[data-sec]');
+  function show(f){
+    btns.forEach(function(b){b.classList.toggle('on', b.dataset.f===f);});
+    secs.forEach(function(s){s.hidden = !(f==='all' || s.dataset.sec.split(' ').indexOf(f)>=0);});
+    try{localStorage.setItem(KEY,f);}catch(e){}
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.f);});});
+  var f='all'; try{f=localStorage.getItem(KEY)||'all';}catch(e){}
+  if(!document.querySelector('nav button[data-f="'+f+'"]')) f='all';
+  show(f);
+})();
+"""
+
+
+def _same_venue(page_venue: str, booked_venue: str) -> bool:
+    a, b = page_venue.lower().split(), booked_venue.lower().split()
+    return bool(a and b and a[0] == b[0])
+
+
 def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt.date) -> None:
-    """Phone-friendly page of free courts within the alert windows (what you're searching for)."""
+    """Phone-friendly page: your bookings, then free courts within your search windows."""
     import html, re
     md_link = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
     def linkify(text):
@@ -327,28 +352,50 @@ def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt
         return "".join(out) + html.escape(text[last:])
     sports = sorted(by_day, key=lambda s: s != "Squash")
     windows = page_windows()
+    mine = my_bookings()
+
+    # sport -> date -> [(venue name, start)] for your bookings
+    booked: dict[str, dict[dt.date, list]] = {}
+    for b in mine or []:
+        what = f"{(b.get('category') or {}).get('name', '')} {b.get('name', '')}".lower()
+        sport = next((sp for sp in sports if sp.lower() in what), None)
+        if sport:
+            st = dt.datetime.fromisoformat(b["starts_at"]["local"][:16])
+            booked.setdefault(sport, {}).setdefault(st.date(), []).append(((b.get("venue") or {}).get("name", ""), f"{st:%H:%M}"))
+
+    buttons = [("all", "All")] + ([("mine", "Booked")] if mine is not None else []) + [(sp.lower(), sp) for sp in sports]
     parts = ["<!doctype html><html lang=en><head><meta charset=utf-8>",
              '<meta name=viewport content="width=device-width,initial-scale=1">',
              "<title>Free courts</title><style>" + PAGE_CSS + "</style></head><body><main>",
              "<h1>Free courts near E2</h1>",
              f'<p class=sub>Updated {dt.datetime.now():%a %d %b, %H:%M}. Tap a time to book.</p>',
-             "<nav>" + '<a href="#mine">Booked</a>' + "".join(f'<a href="#{s.lower()}">{s}</a>' for s in sports) + "</nav>"]
-    mine = my_bookings()
+             "<nav>" + "".join(f'<button type=button data-f="{k}">{v}</button>' for k, v in buttons) + "</nav>"]
     if mine is not None:
-        parts.append('<h2 id="mine">Your bookings</h2><p class=win>Upcoming Better bookings · '
-                     '<a href="https://myaccount.better.org.uk/bookings/upcoming" style="color:var(--accent)">manage or cancel</a></p>')
         rows = booking_rows(mine)
-        parts.append(f'<section class=day>{"".join(rows)}</section>' if rows else "<p class=none>Nothing booked.</p>")
+        parts.append('<div data-sec="mine"><h2>Your bookings</h2><p class=win>Upcoming Better bookings · '
+                     '<a href="https://myaccount.better.org.uk/bookings/upcoming" style="color:var(--accent)">manage or cancel</a></p>'
+                     + (f'<section class=day>{"".join(rows)}</section>' if rows else "<p class=none>Nothing booked.</p>") + "</div>")
     for sport in sports:
-        parts.append(f'<h2 id="{sport.lower()}">{sport}</h2><p class=win>{html.escape(windows.get(sport, ([], ""))[1])}</p>')
+        key = sport.lower()
+        parts.append(f'<div data-sec="{key}"><h2>{sport}</h2><p class=win>{html.escape(windows.get(sport, ([], ""))[1])}'
+                     f'{" · <span class=booked>●</span> = your booking" if booked.get(sport) else ""}</p>')
+        mine_days = booked.get(sport, {})
         shown = 0
-        for date in sorted(by_day[sport]):
-            rows = []
-            for venue, times, link in by_day[sport][date]:
-                ok = [t for t in times if on_page(windows, sport, date, t)]
+        for date in sorted(set(by_day[sport]) | set(mine_days)):
+            rows, used = [], set()
+            for venue, times, link in by_day[sport].get(date, []):
+                ok = [(t, f'<a href="{html.escape(link)}">{t}</a>') for t in times if on_page(windows, sport, date, t)]
+                for i, (bv, bt) in enumerate(mine_days.get(date, [])):
+                    if _same_venue(venue, bv):
+                        ok.append((bt, f'<span class=booked>{bt} ✓</span>'))
+                        used.add(i)
                 if ok:
-                    chips = "".join(f'<a href="{html.escape(link)}">{t}</a>' for t in ok)
+                    chips = "".join(c for _, c in sorted(ok))
                     rows.append(f'<div class=row><div class=venue>{html.escape(venue)}</div><div class=times>{chips}</div></div>')
+            for i, (bv, bt) in enumerate(mine_days.get(date, [])):
+                if i not in used:  # booked somewhere with nothing else free that day
+                    rows.append(f'<div class=row><div class=venue>{html.escape(bv)}</div>'
+                                f'<div class=times><span class=booked>{bt} ✓</span></div></div>')
             if rows:
                 shown += 1
                 parts.append(f'<section class=day><h3>{date:%a %d %b}</h3>{"".join(rows)}</section>')
@@ -356,14 +403,16 @@ def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt
             parts.append("<p class=none>Nothing free in this window right now.</p>")
         if notes.get(sport):
             parts.append("<ul class=notes>" + "".join(f"<li>{linkify(n)}</li>" for n in notes[sport]) + "</ul>")
+        parts.append("</div>")
     links = [f"[{name}]({TH_BOOK.format(park=slug, date=today)}) (tennis, Tower Hamlets)" for name, slug in CHECK_YOURSELF.items()]
     links += [e.lstrip("- ") for e in elsewhere]
-    parts.append("<h2>Check these yourself</h2><p class=win>Can't be checked automatically from here; your phone still sends alerts for the ClubSpark ones.</p>")
-    parts.append("<ul class=links>" + "".join(f"<li>{linkify(l)}</li>" for l in links) + "</ul>")
+    parts.append('<div data-sec="tennis"><h2>Check these yourself</h2><p class=win>Can\'t be checked automatically from here; '
+                 "your phone still sends alerts for the ClubSpark ones.</p>"
+                 "<ul class=links>" + "".join(f"<li>{linkify(l)}</li>" for l in links) + "</ul></div>")
     full = os.environ.get("SUMMARY_URL")
     if full:
         parts.append(f'<p class=sub style="margin-top:24px"><a href="{html.escape(full)}" style="color:var(--accent)">Every free time, outside these windows too</a></p>')
-    parts.append("</main></body></html>")
+    parts.append("<script>" + PAGE_JS + "</script></main></body></html>")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(parts) + "\n")
 
