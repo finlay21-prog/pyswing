@@ -209,6 +209,105 @@ def weekend_reminder(reminders: set) -> None:
         print(f"ntfy error {r.status_code}: {r.text[:200]}")
 
 
+PAGE_CSS = """
+:root{--bg:#f7f7f4;--card:#fff;--ink:#1d1d1b;--muted:#6b6b66;--line:#e4e3dd;--chip:#e8f1ea;--chip-ink:#1f5130;--accent:#2f6b45}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--ink:#ecebe6;--muted:#9a9993;--line:#2e2e2b;--chip:#1f3326;--chip-ink:#bfe3c9;--accent:#7cc293}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}h1{font-size:1.5rem;margin:0 0 2px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+nav{display:flex;gap:8px;margin:0 0 18px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:1}
+nav a{flex:1;text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600;background:var(--card)}
+h2{font-size:1.15rem;margin:26px 0 4px}.win{color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px}
+.day h3{font-size:.95rem;margin:0 0 6px}.row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}.venue{flex:0 0 38%;font-size:.92rem}.times{display:flex;flex-wrap:wrap;gap:6px}
+.times a{background:var(--chip);color:var(--chip-ink);border-radius:8px;padding:3px 8px;text-decoration:none;font-size:.9rem;font-variant-numeric:tabular-nums}
+.none{color:var(--muted);font-size:.92rem}.notes{color:var(--muted);font-size:.85rem;padding-left:18px}
+.notes a,.links a{color:var(--accent)}.links{padding-left:18px}
+"""
+def page_windows() -> dict:
+    """What the page shows per sport: the alert window if there is one, otherwise the times
+    in bookings.json's goals for that sport (the times you're trying to play)."""
+    try:
+        goals = json.loads(Path("bookings.json").read_text()).get("goals", [])
+    except (OSError, ValueError):
+        goals = []
+    out = {}
+    for sport in VENUES:
+        if sport in ALERT_WINDOWS:
+            w = ALERT_WINDOWS[sport]
+            names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            days = "/".join(names[d] for d in sorted(w["days"]))
+            end = (dt.datetime.strptime(w["to"], "%H:%M") + dt.timedelta(hours=1)).strftime("%H:%M")
+            out[sport] = ([{"days": [names[d] for d in w["days"]], "earliest_start": w["from"], "latest_start": w["to"]}],
+                          f"{days}, {w['from']}–{end}")
+        else:
+            mine = [g for g in goals if g.get("sport", g.get("name")) == sport
+                    and (not g.get("only_date") or g["only_date"] >= dt.date.today().isoformat())]
+            text = " · ".join(
+                (dt.date.fromisoformat(g["only_date"]).strftime("%a %d %b") if g.get("only_date") else "/".join(g["days"]))
+                + f" {g['earliest_start']}–{g['latest_start']} start" for g in mine)
+            out[sport] = (mine, text or "All times")
+    return out
+
+
+def on_page(windows: dict, sport: str, date: dt.date, start: str) -> bool:
+    goals, _ = windows.get(sport, ([], ""))
+    if not goals:
+        return True
+    day = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][date.weekday()]
+    return any(day in g["days"] and g["earliest_start"] <= start <= g["latest_start"]
+               and (not g.get("only_date") or g["only_date"] == date.isoformat()) for g in goals)
+
+
+def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt.date) -> None:
+    """Phone-friendly page of free courts within the alert windows (what you're searching for)."""
+    import html, re
+    md_link = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+    def linkify(text):
+        out, last = [], 0
+        for m in md_link.finditer(text):
+            out.append(html.escape(text[last:m.start()]))
+            out.append(f'<a href="{html.escape(m.group(2))}">{html.escape(m.group(1))}</a>')
+            last = m.end()
+        return "".join(out) + html.escape(text[last:])
+    sports = sorted(by_day, key=lambda s: s != "Squash")
+    windows = page_windows()
+    parts = ["<!doctype html><html lang=en><head><meta charset=utf-8>",
+             '<meta name=viewport content="width=device-width,initial-scale=1">',
+             "<title>Free courts</title><style>" + PAGE_CSS + "</style></head><body><main>",
+             "<h1>Free courts near E2</h1>",
+             f'<p class=sub>Updated {dt.datetime.now():%a %d %b, %H:%M}. Tap a time to book.</p>',
+             "<nav>" + "".join(f'<a href="#{s.lower()}">{s}</a>' for s in sports) + "</nav>"]
+    for sport in sports:
+        parts.append(f'<h2 id="{sport.lower()}">{sport}</h2><p class=win>{html.escape(windows.get(sport, ([], ""))[1])}</p>')
+        shown = 0
+        for date in sorted(by_day[sport]):
+            rows = []
+            for venue, times, link in by_day[sport][date]:
+                ok = [t for t in times if on_page(windows, sport, date, t)]
+                if ok:
+                    chips = "".join(f'<a href="{html.escape(link)}">{t}</a>' for t in ok)
+                    rows.append(f'<div class=row><div class=venue>{html.escape(venue)}</div><div class=times>{chips}</div></div>')
+            if rows:
+                shown += 1
+                parts.append(f'<section class=day><h3>{date:%a %d %b}</h3>{"".join(rows)}</section>')
+        if not shown:
+            parts.append("<p class=none>Nothing free in this window right now.</p>")
+        if notes.get(sport):
+            parts.append("<ul class=notes>" + "".join(f"<li>{linkify(n)}</li>" for n in notes[sport]) + "</ul>")
+    links = [f"[{name}]({TH_BOOK.format(park=slug, date=today)}) (tennis, Tower Hamlets)" for name, slug in CHECK_YOURSELF.items()]
+    links += [e.lstrip("- ") for e in elsewhere]
+    parts.append("<h2>Check these yourself</h2><p class=win>Can't be checked automatically from here; your phone still sends alerts for the ClubSpark ones.</p>")
+    parts.append("<ul class=links>" + "".join(f"<li>{linkify(l)}</li>" for l in links) + "</ul>")
+    full = os.environ.get("SUMMARY_URL")
+    if full:
+        parts.append(f'<p class=sub style="margin-top:24px"><a href="{html.escape(full)}" style="color:var(--accent)">Every free time, outside these windows too</a></p>')
+    parts.append("</main></body></html>")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(parts) + "\n")
+
+
 def main():
     seen, seeded, reminders = load_state()
     now_seen, now_seeded = set(), set(seeded)
@@ -292,6 +391,8 @@ def main():
     text = "\n".join(summary) + "\n"
     print(text)
     SUMMARY_FILE.write_text(text)
+    if os.environ.get("PAGE_FILE"):
+        write_page(Path(os.environ["PAGE_FILE"]), by_day, notes, elsewhere, today)
 
     topics = {s: topic_for(s) for s in VENUES}
     if any(topics.values()):
