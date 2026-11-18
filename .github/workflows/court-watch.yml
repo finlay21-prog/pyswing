@@ -41,6 +41,8 @@ jobs:
           NTFY_TOPIC_SHARED: ${{ github.repository == 'finlay21-prog/pyswing' && 'e2-courts-df3oa5' || '' }}
           STATE_FILE: seen_slots.json
           SUMMARY_FILE: free-courts.md
+          BETTER_EMAIL: ${{ secrets.BETTER_EMAIL }}  # for the 'Your bookings' section of the page
+          BETTER_PASSWORD: ${{ secrets.BETTER_PASSWORD }}
           PAGE_FILE: docs/index.html  # served at https://<user>.github.io/pyswing/ once Pages is on
           # ClubSpark's firewall blocks GitHub's servers; those venues run on the phone (phone/).
           PLATFORMS: better

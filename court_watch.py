@@ -224,6 +224,8 @@ h2{font-size:1.15rem;margin:26px 0 4px}.win{color:var(--muted);font-size:.85rem;
 .times a{background:var(--chip);color:var(--chip-ink);border-radius:8px;padding:3px 8px;text-decoration:none;font-size:.9rem;font-variant-numeric:tabular-nums}
 .none{color:var(--muted);font-size:.92rem}.notes{color:var(--muted);font-size:.85rem;padding-left:18px}
 .notes a,.links a{color:var(--accent)}.links{padding-left:18px}
+.bk{display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:.92rem}.bk:first-child{border-top:0}
+.bk-when{flex:0 0 32%}.muted{color:var(--muted)}
 """
 def page_windows() -> dict:
     """What the page shows per sport: the alert window if there is one, otherwise the times
@@ -260,6 +262,58 @@ def on_page(windows: dict, sport: str, date: dt.date, start: str) -> bool:
                and (not g.get("only_date") or g["only_date"] == date.isoformat()) for g in goals)
 
 
+def my_bookings() -> list[dict] | None:
+    """Your upcoming Better bookings (needs BETTER_EMAIL/BETTER_PASSWORD). None if not available."""
+    if not (os.environ.get("BETTER_EMAIL") and os.environ.get("BETTER_PASSWORD")):
+        return None
+    try:
+        import book  # reuses the booker's login
+        session = requests.Session()
+        session.headers.update(book.HEADERS)
+        user = book.login(session)
+        out, page = [], 1
+        while page and page <= 10:
+            r = session.get(f"{book.BASE}/api/v1/activities/bookings", timeout=30,
+                            params={"user_id": user.get("id"), "cancellation_source": "my-account", "page": page})
+            r.raise_for_status()
+            body = r.json()
+            out += body.get("data") or []
+            page = ((body.get("meta") or {}).get("pagination") or {}).get("next_page")
+    except Exception as e:
+        print(f"couldn't load your bookings: {type(e).__name__}")
+        return None
+    now = dt.datetime.now().strftime("%Y-%m-%dT%H:%M")
+    upcoming = [b for b in out if (b.get("ends_at") or {}).get("local", "") >= now
+                and "cancel" not in str(b.get("status", "")).lower()]
+    return sorted(upcoming, key=lambda b: b["starts_at"]["local"])
+
+
+def booking_rows(bookings: list[dict]) -> list[str]:
+    import html
+    rows = []
+    for b in bookings:
+        start = dt.datetime.fromisoformat(b["starts_at"]["local"][:16])
+        end = dt.datetime.fromisoformat(b["ends_at"]["local"][:16])
+        what = (b.get("category") or {}).get("name") or b.get("name", "")
+        court = (b.get("location_name") or "").split(",")[0]
+        venue = (b.get("venue") or {}).get("name", "")
+        price = (b.get("price") or {}).get("formatted", "")
+        canc = b.get("cancellation") or {}
+        cut = ""
+        if canc.get("can_cancel") and canc.get("cut_off"):
+            try:
+                c = dt.datetime.fromisoformat(canc["cut_off"]).astimezone().replace(tzinfo=None)
+                cut = f"Free cancel until {c:%a %d %b %H:%M}" if c > dt.datetime.now() else "Past free-cancel time"
+            except ValueError:
+                pass
+        rows.append(
+            f'<div class=bk><div class=bk-when>{start:%a %d %b}<br><b>{start:%H:%M}–{end:%H:%M}</b></div>'
+            f'<div><b>{html.escape(what)}</b> · {html.escape(venue)}<br>'
+            f'<span class=muted>{html.escape(court)}{" · " + html.escape(price) if price else ""}'
+            f'{"<br>" + cut if cut else ""}</span></div></div>')
+    return rows
+
+
 def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt.date) -> None:
     """Phone-friendly page of free courts within the alert windows (what you're searching for)."""
     import html, re
@@ -278,7 +332,13 @@ def write_page(path: Path, by_day: dict, notes: dict, elsewhere: list, today: dt
              "<title>Free courts</title><style>" + PAGE_CSS + "</style></head><body><main>",
              "<h1>Free courts near E2</h1>",
              f'<p class=sub>Updated {dt.datetime.now():%a %d %b, %H:%M}. Tap a time to book.</p>',
-             "<nav>" + "".join(f'<a href="#{s.lower()}">{s}</a>' for s in sports) + "</nav>"]
+             "<nav>" + '<a href="#mine">Booked</a>' + "".join(f'<a href="#{s.lower()}">{s}</a>' for s in sports) + "</nav>"]
+    mine = my_bookings()
+    if mine is not None:
+        parts.append('<h2 id="mine">Your bookings</h2><p class=win>Upcoming Better bookings · '
+                     '<a href="https://myaccount.better.org.uk/bookings/upcoming" style="color:var(--accent)">manage or cancel</a></p>')
+        rows = booking_rows(mine)
+        parts.append(f'<section class=day>{"".join(rows)}</section>' if rows else "<p class=none>Nothing booked.</p>")
     for sport in sports:
         parts.append(f'<h2 id="{sport.lower()}">{sport}</h2><p class=win>{html.escape(windows.get(sport, ([], ""))[1])}</p>')
         shown = 0
