@@ -14,6 +14,10 @@ on:
         description: "Dry run: fill and empty the basket, don't pay"
         type: boolean
         default: false
+      probe_bookings:
+        description: "Debug: log the shape of your bookings list (field names only)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -52,6 +56,7 @@ jobs:
           NTFY_TOPIC_TENNIS: ${{ secrets.NTFY_TOPIC_TENNIS }}
           BOOKING_STATE: booking-state.json
           DRY_RUN: ${{ github.event.inputs.dry_run }}
+          PROBE_BOOKINGS: ${{ github.event.inputs.probe_bookings == 'true' && '1' || '' }}
           TZ: Europe/London
         run: python book.py
 

@@ -460,7 +460,24 @@ def apply_skips(state: dict):
                "Taken out of your basket. The booker won't try again that week.")
 
 
+def probe_bookings():
+    """One-off: log the *shape* (field names only) of Better's bookings responses."""
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    user = login(session)
+    for url, params in [(f"{BASE}/api/my-account/bookings", {"filter": "future"}),
+                        (f"{BASE}/api/v1/activities/bookings", {"user_id": user.get("id"), "cancellation_source": "my-account", "page": 1})]:
+        r = session.get(url, params=params, timeout=30)
+        try:
+            body = r.json()
+        except ValueError:
+            body = {}
+        log(f"{url.split('/api/')[1]}: HTTP {r.status_code} {json.dumps(shape(body))[:3000]}")
+
+
 def main():
+    if os.environ.get("PROBE_BOOKINGS"):
+        return probe_bookings()
     only = set(sys.argv[1:])
     if not (os.environ.get("BETTER_EMAIL") and os.environ.get("BETTER_PASSWORD")):
         log("auto-booking is off: add BETTER_EMAIL and BETTER_PASSWORD secrets to turn it on")
